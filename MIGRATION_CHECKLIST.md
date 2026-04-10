@@ -6,9 +6,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~81%
+- **Progress:** ~83%
 - **Current focus:** Phase 4 - runtime interaction usability and inspect/HUD support on the clean generated scene path
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, there is a clean scene-generation path for a fresh gameplay scene with explicit runtime wiring, placement feedback has a minimal runtime HUD path, and a basic selection/inspect HUD now exists for generated-scene testing, but Unity compile/runtime verification is still incomplete.
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, there is a clean scene-generation path for a fresh gameplay scene with explicit runtime wiring, placement feedback has a minimal runtime HUD path, a basic selection/inspect HUD now exists for generated-scene testing, and recent Unity runtime verification confirmed camera pitch control plus corrected grid/building-site terrain alignment, but full compile/runtime verification is still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
@@ -17,7 +17,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - Placement feedback now has a minimal runtime HUD path, but it is still prototype-level rather than final production UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 - Clean scene creation now has an editor automation path, but it still needs real Unity compile/open verification.
-- New camera/selection/placement input path has been moved away from legacy `UnityEngine.Input`, but still needs runtime verification in Unity.
+- New camera/selection/placement input path has been moved away from legacy `UnityEngine.Input`; camera pitch/rotation and terrain alignment have now seen initial runtime verification, but broader interaction verification is still incomplete.
 - Generated scene and assets have now been created by Unity, but scene-side runtime components still need final Input System compatibility and asset-binding verification.
 
 ---
@@ -216,22 +216,23 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [ ] Generated `DemoGameplayScene` opens and initializes correctly in Unity
 - [x] Add runtime fallback loading for generated worldgen settings when scene instance references are missing
 - [x] Generated scene path now uses `InputSystemUIInputModule` instead of legacy `StandaloneInputModule`
-- [ ] Grid maps correctly onto terrain
+- [x] Grid maps correctly onto terrain
 - [ ] Hover/select works on terrain cells
 - [ ] Placement preview matches gameplay validation
-- [ ] Placement creates expected runtime entities
+- [x] Placement creates expected runtime entities
 - [ ] Build completion loop works end-to-end
 - [ ] World view stays in sync with runtime state
 
 ---
 
 ## Recommended Next Step
-1. Run a real Unity compile/scene verification pass, preferably by generating/opening `DemoGameplayScene` first.
-2. Verify the generated scene installer wires camera/runtime/view components correctly in Unity.
-3. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
-4. Further tune camera feel and generated-scene usability based on live Unity testing.
-5. Expand the minimal HUDs into a more complete runtime HUD/UI flow, including richer inspect details and actions.
-6. Then move toward worker-driven construction flow.
+1. Verify hover/select works exactly on terrain cells after the mapper alignment changes.
+2. Verify placement preview matches gameplay validation for rotated and multi-cell buildings.
+3. Verify the generated scene installer wires camera/runtime/view components correctly in Unity.
+4. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
+5. Further tune camera feel and generated-scene usability based on live Unity testing.
+6. Expand the minimal HUDs into a more complete runtime HUD/UI flow, including richer inspect details and actions.
+7. Then move toward worker-driven construction flow.
 
 ---
 
