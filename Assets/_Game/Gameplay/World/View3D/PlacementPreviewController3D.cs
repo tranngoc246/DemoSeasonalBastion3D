@@ -32,6 +32,9 @@ namespace SeasonalBastion
         private BuildingDef _lastDef;
         private string _debugPlacementText = string.Empty;
 
+        public string DebugPlacementText => _debugPlacementText;
+        public bool LastPlacementOk => _lastResult.Ok;
+
         private void Awake()
         {
             ResolveRefs();

@@ -6,15 +6,15 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~79%
-- **Current focus:** Phase 3.2 / Phase 4 - clean scene composition, explicit scene wiring, and runtime camera setup for Unity verification
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, there is a clean scene-generation path for a fresh gameplay scene, and the generated-scene path now has an explicit installer for runtime references, but Unity compile/runtime verification is still incomplete.
+- **Progress:** ~80%
+- **Current focus:** Phase 4 - runtime interaction usability and Unity verification on the clean generated scene path
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, there is a clean scene-generation path for a fresh gameplay scene with explicit runtime wiring, and placement feedback now has a minimal runtime HUD path, but Unity compile/runtime verification is still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
 - `BuildOrderServiceStub` now performs a minimal place/build/complete loop, but upgrade/repair and full worker-driven progression are still stubbed.
 - Terrain-derived start zone and spawn lanes are heuristic selections from terrain bounds, not yet gameplay-tuned paths/config.
-- Placement feedback is still debug-level, not proper runtime HUD/UI.
+- Placement feedback now has a minimal runtime HUD path, but it is still prototype-level rather than final production UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 - Clean scene creation now has an editor automation path, but it still needs real Unity compile/open verification.
 - New camera/selection/placement input path has been moved away from legacy `UnityEngine.Input`, but still needs runtime verification in Unity.
@@ -164,13 +164,14 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 3.3 Interaction
 **Status:** In progress
-**Blocked by:** Feedback is debug-level only, not proper runtime UI yet
+**Blocked by:** Feedback is now available in a minimal HUD, but the runtime UI flow is still prototype-level
 - [x] Add raycast world-to-cell selection
 - [x] Add hover/selection highlight
 - [x] Add placement footprint preview
 - [x] Add placement rotation input
 - [x] Add placement confirm input
 - [x] Show placement failure reason in UI/debug label
+- [x] Add minimal runtime placement HUD for generated scene testing
 - [x] Support footprint preview that respects rotation for non-square buildings
 
 ---
@@ -182,7 +183,8 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [ ] Add inspect/selection model for building/NPC/enemy/site
 - [x] Add strategy camera controller for 3D terrain
 - [ ] Add proper placement mode switching / selected building type UI
-- [ ] Add 3D-friendly runtime HUD/panels
+- [x] Add minimal 3D-friendly runtime placement HUD
+- [ ] Expand runtime HUD/panels beyond placement status
 
 ---
 
@@ -221,7 +223,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 1. Run a real Unity compile/scene verification pass, preferably by generating/opening `DemoGameplayScene` first.
 2. Verify the generated scene installer wires camera/runtime/view components correctly in Unity.
 3. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
-4. Replace debug placement label with proper runtime HUD/UI presentation.
+4. Expand the minimal placement HUD into a more complete runtime HUD/UI flow.
 5. Then move toward worker-driven construction flow.
 
 ---

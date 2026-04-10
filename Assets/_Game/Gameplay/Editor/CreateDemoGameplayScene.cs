@@ -39,7 +39,8 @@ namespace SeasonalBastion.Editor
             var worldView = CreateWorldView(prefabCatalog, terrainRoot, bootstrap);
             SetPrivate(bootstrap, "_worldView", worldView);
             var selectionBundle = CreateSelectionAndPreview(camera, terrainRoot, bootstrap, worldView);
-            CreateInstaller(camera, terrainRoot, bootstrap, worldView, selectionBundle.selection, selectionBundle.highlight, selectionBundle.preview);
+            var hud = CreatePlacementHud(selectionBundle.preview);
+            CreateInstaller(camera, terrainRoot, bootstrap, worldView, selectionBundle.selection, selectionBundle.highlight, selectionBundle.preview, hud);
             CreateEventSystemIfMissing();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -187,7 +188,15 @@ namespace SeasonalBastion.Editor
             return (selection, highlight, preview);
         }
 
-        private static void CreateInstaller(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView, WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview)
+        private static PlacementHudView3D CreatePlacementHud(PlacementPreviewController3D preview)
+        {
+            var go = new GameObject("PlacementHUD");
+            var hud = go.AddComponent<PlacementHudView3D>();
+            SetPrivate(hud, "_preview", preview);
+            return hud;
+        }
+
+        private static void CreateInstaller(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView, WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview, PlacementHudView3D hud)
         {
             var go = new GameObject("GameplaySceneInstaller3D");
             var installer = go.AddComponent<GameplaySceneInstaller3D>();
@@ -201,6 +210,8 @@ namespace SeasonalBastion.Editor
             var strategyCamera = camera != null ? camera.GetComponent<StrategyCameraController3D>() : null;
             if (strategyCamera != null)
                 SetPrivate(installer, "_strategyCamera", strategyCamera);
+            if (hud != null)
+                SetPrivate(installer, "_hud", hud);
         }
 
         private static void CreateEventSystemIfMissing()

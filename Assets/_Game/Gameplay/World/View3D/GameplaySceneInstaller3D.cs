@@ -11,6 +11,7 @@ namespace SeasonalBastion
         [SerializeField] private WorldSelectionController3D _selection;
         [SerializeField] private CellHighlightView3D _highlight;
         [SerializeField] private PlacementPreviewController3D _preview;
+        [SerializeField] private PlacementHudView3D _hud;
         [SerializeField] private StrategyCameraController3D _strategyCamera;
 
         private void Awake()
@@ -35,6 +36,8 @@ namespace SeasonalBastion
                 _highlight = FindFirstObjectByType<CellHighlightView3D>();
             if (_preview == null)
                 _preview = FindFirstObjectByType<PlacementPreviewController3D>();
+            if (_hud == null)
+                _hud = FindFirstObjectByType<PlacementHudView3D>();
             if (_strategyCamera == null)
                 _strategyCamera = FindFirstObjectByType<StrategyCameraController3D>();
 
@@ -76,6 +79,9 @@ namespace SeasonalBastion
                 SetObjectField(_preview, "_selection", _selection);
                 SetObjectField(_preview, "_worldView", _worldView);
             }
+
+            if (_hud != null)
+                SetObjectField(_hud, "_preview", _preview);
         }
 
         private static void SetObjectField(Object target, string fieldName, Object value)
