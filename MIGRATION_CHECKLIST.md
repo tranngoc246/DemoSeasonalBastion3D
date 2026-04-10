@@ -6,14 +6,14 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~70%
+- **Progress:** ~75%
 - **Current focus:** Phase A.3 / Phase 2.2 - terrain-derived runtime correctness and Unity verification
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, and a minimal build lifecycle is wired with terrain-aware placement, but runtime correctness and Unity verification are still incomplete.
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, and a minimal build lifecycle is wired with terrain-aware placement, terrain-derived bounds, start zone, and spawn lanes, but runtime correctness and Unity verification are still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
 - `BuildOrderServiceStub` now performs a minimal place/build/complete loop, but upgrade/repair and full worker-driven progression are still stubbed.
-- `RunStartRuntime` now derives `BuildableRect` from terrain bounds, but start/build area and lanes are still placeholder logic.
+- Terrain-derived start zone and spawn lanes are heuristic selections from terrain bounds, not yet gameplay-tuned paths/config.
 - Placement feedback is still debug-level, not proper runtime HUD/UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 
@@ -112,8 +112,8 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Phase 2 - Terrain Bridge
 **Status:** In progress
-**Progress:** ~80%
-**Blocked by:** Start/build areas and lane derivation are still placeholder logic
+**Progress:** ~90%
+**Blocked by:** Start/build areas and lane derivation are now terrain-derived but still heuristic
 
 ### 2.1 Terrain to gameplay mapping
 **Status:** Done
@@ -124,11 +124,11 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 2.2 Terrain-driven gameplay data
 **Status:** In progress
-**Blocked by:** Start/build area and lane data are still placeholder logic
+**Blocked by:** Start/build area and lane data are terrain-derived but still heuristic
 - [x] Derive real `BuildableRect` from `BuildableMap`
 - [x] Feed terrain blocked/water/buildable data into placement/gameplay rules
-- [ ] Derive start/build area from terrain data
-- [ ] Derive spawn gates/lanes from terrain or start config
+- [x] Derive start/build area from terrain data
+- [x] Derive spawn gates/lanes from terrain or start config
 
 ---
 
@@ -209,7 +209,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass in `SampleScene`.
-2. Derive start/build area and spawn lanes from terrain or explicit runtime config.
+2. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
 3. Replace debug placement label with proper runtime HUD/UI presentation.
 4. Then move toward worker-driven construction flow.
 

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using SeasonalBastion.Contracts;
+using SeasonalBastion.WorldGen.Runtime.Models;
 using UnityEngine;
 
 namespace SeasonalBastion
@@ -102,6 +104,8 @@ namespace SeasonalBastion
         {
             int width = host.GeneratedWorld != null ? host.GeneratedWorld.Width : 0;
             int height = host.GeneratedWorld != null ? host.GeneratedWorld.Height : 0;
+            IntRect buildableRect = DeriveBuildableRect(host);
+            CellPos hqCell = DeriveHqCell(host, buildableRect);
 
             RunStartRuntime runtime = new()
             {
@@ -111,13 +115,92 @@ namespace SeasonalBastion
                 OpeningQualityBand = "prototype",
                 ResourceGenerationModeRequested = "terrain-bridge",
                 ResourceGenerationModeApplied = "terrain-bridge",
-                BuildableRect = DeriveBuildableRect(host)
+                BuildableRect = buildableRect
             };
 
-            CellPos center = new(width / 2, height / 2);
-            runtime.SpawnGates.Add(new SpawnGate(0, new CellPos(width - 3, center.Y), Dir4.W));
-            runtime.Lanes[0] = new LaneRuntime(0, new CellPos(width - 3, center.Y), Dir4.W, center);
+            AddStartZones(runtime, hqCell, buildableRect);
+            AddSpawnLanes(runtime, host, hqCell, buildableRect);
+            runtime.LockedInvariants.Add("terrain-derived-buildable-rect");
+            runtime.LockedInvariants.Add("terrain-derived-start-zone");
+            runtime.LockedInvariants.Add("terrain-derived-spawn-lanes");
             return runtime;
+        }
+
+        private static CellPos DeriveHqCell(TerrainGameplayRuntimeHost host, IntRect buildableRect)
+        {
+            var world = host.GeneratedWorld;
+            StartAreaDefinition startArea = host.Bridge != null ? host.Bridge.GetStartArea() : default;
+            int desiredX = Mathf.RoundToInt(startArea.Center.x);
+            int desiredY = Mathf.RoundToInt(startArea.Center.y);
+
+            if (world?.BuildableMap == null)
+                return new CellPos(Mathf.Max(buildableRect.XMin, desiredX), Mathf.Max(buildableRect.YMin, desiredY));
+
+            CellPos best = new(
+                Mathf.Clamp(desiredX, buildableRect.XMin, buildableRect.XMax),
+                Mathf.Clamp(desiredY, buildableRect.YMin, buildableRect.YMax));
+
+            float bestDistSq = float.MaxValue;
+            for (int y = buildableRect.YMin; y <= buildableRect.YMax; y++)
+            {
+                for (int x = buildableRect.XMin; x <= buildableRect.XMax; x++)
+                {
+                    if (!world.BuildableMap[x, y])
+                        continue;
+
+                    float dx = x - desiredX;
+                    float dy = y - desiredY;
+                    float distSq = dx * dx + dy * dy;
+                    if (distSq >= bestDistSq)
+                        continue;
+
+                    best = new CellPos(x, y);
+                    bestDistSq = distSq;
+                }
+            }
+
+            return best;
+        }
+
+        private static void AddStartZones(RunStartRuntime runtime, CellPos hqCell, IntRect buildableRect)
+        {
+            int zoneRadiusX = Mathf.Max(4, (buildableRect.XMax - buildableRect.XMin) / 8);
+            int zoneRadiusY = Mathf.Max(4, (buildableRect.YMax - buildableRect.YMin) / 8);
+            IntRect startZone = new(
+                Mathf.Max(buildableRect.XMin, hqCell.X - zoneRadiusX),
+                Mathf.Max(buildableRect.YMin, hqCell.Y - zoneRadiusY),
+                Mathf.Min(buildableRect.XMax, hqCell.X + zoneRadiusX),
+                Mathf.Min(buildableRect.YMax, hqCell.Y + zoneRadiusY));
+
+            int cellCount = Mathf.Max(0, (startZone.XMax - startZone.XMin + 1) * (startZone.YMax - startZone.YMin + 1));
+            runtime.Zones["start"] = new ZoneRect("start", "build", "hq_l1", startZone, cellCount, "terrain-start-area");
+            runtime.Zones["hq_core"] = new ZoneRect("hq_core", "hq", "hq_l1", startZone, cellCount, "terrain-start-area");
+        }
+
+        private static void AddSpawnLanes(RunStartRuntime runtime, TerrainGameplayRuntimeHost host, CellPos hqCell, IntRect buildableRect)
+        {
+            var world = host.GeneratedWorld;
+            if (world?.BuildableMap == null)
+                return;
+
+            List<(CellPos cell, Dir4 dir)> candidates = new(4)
+            {
+                (FindEdgeBuildableCell(world.BuildableMap, buildableRect, Edge.Right, hqCell), Dir4.W),
+                (FindEdgeBuildableCell(world.BuildableMap, buildableRect, Edge.Left, hqCell), Dir4.E),
+                (FindEdgeBuildableCell(world.BuildableMap, buildableRect, Edge.Top, hqCell), Dir4.S),
+                (FindEdgeBuildableCell(world.BuildableMap, buildableRect, Edge.Bottom, hqCell), Dir4.N),
+            };
+
+            int laneId = 0;
+            foreach (var candidate in candidates)
+            {
+                if (!IsValidCell(candidate.cell, world.Width, world.Height))
+                    continue;
+
+                runtime.SpawnGates.Add(new SpawnGate(laneId, candidate.cell, candidate.dir));
+                runtime.Lanes[laneId] = new LaneRuntime(laneId, candidate.cell, candidate.dir, hqCell);
+                laneId++;
+            }
         }
 
         private static IntRect DeriveBuildableRect(TerrainGameplayRuntimeHost host)
@@ -151,6 +234,64 @@ namespace SeasonalBastion
                 return default;
 
             return new IntRect(minX, minY, maxX, maxY);
+        }
+
+        private static CellPos FindEdgeBuildableCell(bool[,] buildableMap, IntRect rect, Edge edge, CellPos target)
+        {
+            CellPos best = default;
+            float bestDistSq = float.MaxValue;
+            bool found = false;
+
+            switch (edge)
+            {
+                case Edge.Left:
+                    for (int y = rect.YMin; y <= rect.YMax; y++)
+                        Consider(rect.XMin, y);
+                    break;
+                case Edge.Right:
+                    for (int y = rect.YMin; y <= rect.YMax; y++)
+                        Consider(rect.XMax, y);
+                    break;
+                case Edge.Top:
+                    for (int x = rect.XMin; x <= rect.XMax; x++)
+                        Consider(x, rect.YMax);
+                    break;
+                case Edge.Bottom:
+                    for (int x = rect.XMin; x <= rect.XMax; x++)
+                        Consider(x, rect.YMin);
+                    break;
+            }
+
+            return found ? best : default;
+
+            void Consider(int x, int y)
+            {
+                if (!buildableMap[x, y])
+                    return;
+
+                float dx = x - target.X;
+                float dy = y - target.Y;
+                float distSq = dx * dx + dy * dy;
+                if (distSq >= bestDistSq)
+                    return;
+
+                best = new CellPos(x, y);
+                bestDistSq = distSq;
+                found = true;
+            }
+        }
+
+        private static bool IsValidCell(CellPos cell, int width, int height)
+        {
+            return cell.X >= 0 && cell.Y >= 0 && cell.X < width && cell.Y < height;
+        }
+
+        private enum Edge
+        {
+            Left,
+            Right,
+            Top,
+            Bottom,
         }
 
         private void SeedDemoContent()
