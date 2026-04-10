@@ -40,7 +40,8 @@ namespace SeasonalBastion.Editor
             SetPrivate(bootstrap, "_worldView", worldView);
             var selectionBundle = CreateSelectionAndPreview(camera, terrainRoot, bootstrap, worldView);
             var hud = CreatePlacementHud(selectionBundle.preview);
-            CreateInstaller(camera, terrainRoot, bootstrap, worldView, selectionBundle.selection, selectionBundle.highlight, selectionBundle.preview, hud);
+            var inspectHud = CreateInspectHud(terrainRoot, bootstrap, selectionBundle.selection);
+            CreateInstaller(camera, terrainRoot, bootstrap, worldView, selectionBundle.selection, selectionBundle.highlight, selectionBundle.preview, hud, inspectHud);
             CreateEventSystemIfMissing();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -196,7 +197,17 @@ namespace SeasonalBastion.Editor
             return hud;
         }
 
-        private static void CreateInstaller(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView, WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview, PlacementHudView3D hud)
+        private static SelectionInspectHudView3D CreateInspectHud(TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldSelectionController3D selection)
+        {
+            var go = new GameObject("SelectionInspectHUD");
+            var hud = go.AddComponent<SelectionInspectHudView3D>();
+            SetPrivate(hud, "_runtimeHost", host);
+            SetPrivate(hud, "_bootstrap", bootstrap);
+            SetPrivate(hud, "_selection", selection);
+            return hud;
+        }
+
+        private static void CreateInstaller(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView, WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview, PlacementHudView3D hud, SelectionInspectHudView3D inspectHud)
         {
             var go = new GameObject("GameplaySceneInstaller3D");
             var installer = go.AddComponent<GameplaySceneInstaller3D>();
@@ -212,6 +223,8 @@ namespace SeasonalBastion.Editor
                 SetPrivate(installer, "_strategyCamera", strategyCamera);
             if (hud != null)
                 SetPrivate(installer, "_hud", hud);
+            if (inspectHud != null)
+                SetPrivate(installer, "_inspectHud", inspectHud);
         }
 
         private static void CreateEventSystemIfMissing()
