@@ -188,13 +188,7 @@ namespace SeasonalBastion
 
         private void PositionFootprintView(Transform target, CellPos anchor, int sizeX, int sizeY, Vector3 extraOffset)
         {
-            float avgHeight = _runtimeHost.Mapper.GetAverageHeightForFootprint(anchor, sizeX, sizeY);
-            float cellSize = _runtimeHost.Mapper.CellSize;
-            Vector3 pos = new(
-                _runtimeHost.transform.position.x + (anchor.X + sizeX * 0.5f) * cellSize,
-                _runtimeHost.transform.position.y + avgHeight,
-                _runtimeHost.transform.position.z + (anchor.Y + sizeY * 0.5f) * cellSize);
-
+            Vector3 pos = _runtimeHost.Mapper.FootprintToWorldCenter(anchor, sizeX, sizeY);
             target.position = pos + extraOffset;
         }
 
