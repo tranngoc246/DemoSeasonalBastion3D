@@ -50,13 +50,13 @@ namespace SeasonalBastion
             World = new WorldState();
             Events = new EventBus();
             WorldIndex = new WorldIndexService(World, Data);
-            BuildOrders = new BuildOrderServiceStub(World, _terrainHost.GridMap, Data, Events, WorldIndex);
             Placement = new PlacementService(_terrainHost.GridMap, World, Data, WorldIndex, Events);
-            WorldOps = new WorldOps(World, Events, Data, WorldIndex, null);
             RunStart = BuildRunStart(_terrainHost);
+            BuildOrders = new BuildOrderServiceStub(World, _terrainHost.GridMap, Data, Events, WorldIndex);
             Placement.BindBuildOrders(BuildOrders);
             Placement.BindRunStart(RunStart);
             Placement.BindTerrainBridge(_terrainHost.Bridge);
+            WorldOps = new WorldOps(World, Events, Data, WorldIndex, null, _terrainHost.GridMap, BuildOrders);
             WorldIndex.RebuildAll();
 
             if (_seedDemoContent)

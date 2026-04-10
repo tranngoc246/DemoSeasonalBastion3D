@@ -94,7 +94,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [ ] Verify site footprint occupancy rules
 - [x] Verify road placement/removal baseline logic exists
 - [x] Verify driveway / entry-road auto-create baseline exists
-- [ ] Verify destroy/remove transitions clean up grid correctly
+- [x] Verify destroy/remove transitions clean up grid correctly
 - [x] Validate placement against terrain `BuildableMap`, water, and blocked cells instead of only `BuildableRect`
 - [x] Validate rotated footprint dimensions for non-square buildings
 
@@ -209,8 +209,8 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass in `SampleScene`.
 2. Verify terrain-aware placement behavior visually on valid/invalid cells, especially water, steep edges, and map borders.
-3. Tackle destroy/remove cleanup so grid occupancy fully clears on cancellation/removal paths.
-4. Then move toward worker-driven construction flow and fail-reason UI.
+3. Add fail-reason UI/debug label so invalid placement feedback is visible in-scene.
+4. Then move toward worker-driven construction flow.
 
 ---
 

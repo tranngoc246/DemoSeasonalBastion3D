@@ -11,14 +11,18 @@ namespace SeasonalBastion
         private readonly IDataRegistry _data;
         private readonly IWorldIndex _index;
         private readonly IJobBoard _jobs;
+        private readonly IGridMap _grid;
+        private readonly IBuildOrderService _buildOrders;
 
-        public WorldOps(IWorldState world, IEventBus bus, IDataRegistry data = null, IWorldIndex index = null, IJobBoard jobs = null)
+        public WorldOps(IWorldState world, IEventBus bus, IDataRegistry data = null, IWorldIndex index = null, IJobBoard jobs = null, IGridMap grid = null, IBuildOrderService buildOrders = null)
         {
             _world = world;
             _bus = bus;
             _data = data;
             _index = index;
             _jobs = jobs;
+            _grid = grid;
+            _buildOrders = buildOrders;
         }
 
         public BuildingId CreateBuilding(string buildingDefId, CellPos anchor, Dir4 rotation)
@@ -57,10 +61,14 @@ namespace SeasonalBastion
         public void DestroyBuilding(BuildingId id)
         {
             if (!_world.Buildings.Exists(id)) return;
+            if (_buildOrders != null && _buildOrders.CancelByBuilding(id))
+                return;
+
             BuildingState st = _world.Buildings.Get(id);
             string defId = st.DefId;
             ClearNpcWorkplaceReferences(id);
             CancelQueuedJobsForWorkplace(id);
+            ClearBuildingFootprint(st);
             DestroyTowerStateForBuilding(st);
             _world.Buildings.Destroy(id);
             try { _index?.OnBuildingDestroyed(id); } catch (Exception ex) { Debug.LogError($"[WorldOps] Failed to update WorldIndex after destroying building {id.Value}: {ex}"); }
@@ -120,8 +128,14 @@ namespace SeasonalBastion
         public void DestroyBuildSite(SiteId id)
         {
             if (!_world.Sites.Exists(id)) return;
+            if (_buildOrders != null && _buildOrders.CancelBySite(id))
+                return;
+
+            BuildSiteState st = _world.Sites.Get(id);
+            ClearSiteFootprint(st);
             _world.Sites.Destroy(id);
             _bus?.Publish(new WorldStateChangedEvent("BuildSite", id.Value));
+            _bus?.Publish(new RoadsDirtyEvent());
         }
 
         private void NotifyBuildingCreated(string buildingDefId, BuildingId id)
@@ -130,6 +144,41 @@ namespace SeasonalBastion
             _bus?.Publish(new BuildingPlacedEvent(buildingDefId, id));
             _bus?.Publish(new WorldStateChangedEvent("Building", id.Value));
             _bus?.Publish(new RoadsDirtyEvent());
+        }
+
+        private void ClearBuildingFootprint(in BuildingState building)
+        {
+            if (_grid == null || _data == null)
+                return;
+            if (!_data.TryGetBuilding(building.DefId, out var def) || def == null)
+                return;
+
+            GetFootprintSize(def, building.Rotation, out int w, out int h);
+            for (int dy = 0; dy < h; dy++)
+                for (int dx = 0; dx < w; dx++)
+                    _grid.ClearBuilding(new CellPos(building.Anchor.X + dx, building.Anchor.Y + dy));
+        }
+
+        private void ClearSiteFootprint(in BuildSiteState site)
+        {
+            if (_grid == null || _data == null)
+                return;
+            if (!_data.TryGetBuilding(site.BuildingDefId, out var def) || def == null)
+                return;
+
+            GetFootprintSize(def, site.Rotation, out int w, out int h);
+            for (int dy = 0; dy < h; dy++)
+                for (int dx = 0; dx < w; dx++)
+                    _grid.ClearSite(new CellPos(site.Anchor.X + dx, site.Anchor.Y + dy));
+        }
+
+        private static void GetFootprintSize(BuildingDef def, Dir4 rotation, out int w, out int h)
+        {
+            int sizeX = Math.Max(1, def.SizeX);
+            int sizeY = Math.Max(1, def.SizeY);
+            bool swap = rotation == Dir4.E || rotation == Dir4.W;
+            w = swap ? sizeY : sizeX;
+            h = swap ? sizeX : sizeY;
         }
 
         private void TryCreateTowerState(in BuildingState building)
