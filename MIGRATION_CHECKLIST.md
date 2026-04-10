@@ -6,15 +6,15 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~65%
-- **Current focus:** Phase A.2 - occupancy/placement correctness after minimal build loop landed
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, and a minimal build lifecycle is now wired, but runtime correctness and Unity verification are still incomplete.
+- **Progress:** ~70%
+- **Current focus:** Phase A.3 / Phase 2.2 - terrain-derived runtime correctness and Unity verification
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, and a minimal build lifecycle is wired with terrain-aware placement, but runtime correctness and Unity verification are still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
 - `BuildOrderServiceStub` now performs a minimal place/build/complete loop, but upgrade/repair and full worker-driven progression are still stubbed.
-- Placement/buildability still relies on heuristic `RunStartRuntime.BuildableRect`, not terrain-derived rules.
-- Rotation-aware footprint validation/preview is still incomplete for non-square buildings.
+- `RunStartRuntime` now derives `BuildableRect` from terrain bounds, but start/build area and lanes are still placeholder logic.
+- Placement feedback is still debug-level, not proper runtime HUD/UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 
 ---
@@ -69,8 +69,8 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Phase A - Gameplay Correctness (re-baselined priority)
 **Status:** In progress
-**Progress:** ~45%
-**Blocked by:** Placement/buildability rules still not fully terrain-driven and not Unity-verified
+**Progress:** ~55%
+**Blocked by:** Runtime still not Unity-verified and build loop is still workerless
 
 ### A1. Build/order/site/building loop
 **Status:** Minimal loop implemented
@@ -112,8 +112,8 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Phase 2 - Terrain Bridge
 **Status:** In progress
-**Progress:** ~70%
-**Blocked by:** Terrain-derived gameplay rules are exposed, but runtime placement still does not consume them fully
+**Progress:** ~80%
+**Blocked by:** Start/build areas and lane derivation are still placeholder logic
 
 ### 2.1 Terrain to gameplay mapping
 **Status:** Done
@@ -124,9 +124,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 2.2 Terrain-driven gameplay data
 **Status:** In progress
-**Blocked by:** `BuildableRect` and lane data are still placeholder logic
-- [ ] Derive real `BuildableRect` from `BuildableMap`
-- [ ] Feed terrain blocked/water/buildable data into placement/gameplay rules
+**Blocked by:** Start/build area and lane data are still placeholder logic
+- [x] Derive real `BuildableRect` from `BuildableMap`
+- [x] Feed terrain blocked/water/buildable data into placement/gameplay rules
 - [ ] Derive start/build area from terrain data
 - [ ] Derive spawn gates/lanes from terrain or start config
 
@@ -209,7 +209,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass in `SampleScene`.
-2. Verify rotated non-square placement/build/cancel flows visually in-scene.
+2. Derive start/build area and spawn lanes from terrain or explicit runtime config.
 3. Replace debug placement label with proper runtime HUD/UI presentation.
 4. Then move toward worker-driven construction flow.
 

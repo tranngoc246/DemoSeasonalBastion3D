@@ -102,8 +102,6 @@ namespace SeasonalBastion
         {
             int width = host.GeneratedWorld != null ? host.GeneratedWorld.Width : 0;
             int height = host.GeneratedWorld != null ? host.GeneratedWorld.Height : 0;
-            int marginX = Mathf.Max(2, Mathf.RoundToInt(width * 0.1f));
-            int marginY = Mathf.Max(2, Mathf.RoundToInt(height * 0.1f));
 
             RunStartRuntime runtime = new()
             {
@@ -113,13 +111,46 @@ namespace SeasonalBastion
                 OpeningQualityBand = "prototype",
                 ResourceGenerationModeRequested = "terrain-bridge",
                 ResourceGenerationModeApplied = "terrain-bridge",
-                BuildableRect = new IntRect(marginX, marginY, Mathf.Max(marginX, width - marginX - 1), Mathf.Max(marginY, height - marginY - 1))
+                BuildableRect = DeriveBuildableRect(host)
             };
 
             CellPos center = new(width / 2, height / 2);
             runtime.SpawnGates.Add(new SpawnGate(0, new CellPos(width - 3, center.Y), Dir4.W));
             runtime.Lanes[0] = new LaneRuntime(0, new CellPos(width - 3, center.Y), Dir4.W, center);
             return runtime;
+        }
+
+        private static IntRect DeriveBuildableRect(TerrainGameplayRuntimeHost host)
+        {
+            var world = host.GeneratedWorld;
+            if (world?.BuildableMap == null)
+                return default;
+
+            int width = world.Width;
+            int height = world.Height;
+            int minX = width;
+            int minY = height;
+            int maxX = -1;
+            int maxY = -1;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (!world.BuildableMap[x, y])
+                        continue;
+
+                    if (x < minX) minX = x;
+                    if (y < minY) minY = y;
+                    if (x > maxX) maxX = x;
+                    if (y > maxY) maxY = y;
+                }
+            }
+
+            if (maxX < minX || maxY < minY)
+                return default;
+
+            return new IntRect(minX, minY, maxX, maxY);
         }
 
         private void SeedDemoContent()
