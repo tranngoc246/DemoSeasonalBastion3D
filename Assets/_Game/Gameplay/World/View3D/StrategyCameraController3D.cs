@@ -26,6 +26,14 @@ namespace SeasonalBastion
         [SerializeField] private bool _enableEdgePan = true;
         [SerializeField] private bool _enableMouseDragPan = true;
 
+        [Header("Rotation")]
+        [SerializeField] private bool _enableMouseRotate = true;
+        [SerializeField] private float _mouseRotateSpeed = 0.18f;
+        [SerializeField] private float _rotateStepDegrees = 45f;
+        [SerializeField] private float _yawSmooth = 12f;
+        [SerializeField] private KeyCode _rotateLeftKey = KeyCode.Q;
+        [SerializeField] private KeyCode _rotateRightKey = KeyCode.E;
+
         [Header("Zoom")]
         [SerializeField] private float _zoomStep = 8f;
         [SerializeField] private float _zoomSmooth = 12f;
@@ -36,14 +44,17 @@ namespace SeasonalBastion
 
         private Vector3 _focusPoint;
         private float _targetDistance;
+        private float _targetYaw;
         private bool _initialized;
-        private bool _dragging;
+        private bool _panDragging;
+        private bool _rotateDragging;
         private Vector2 _lastPointerPosition;
 
         private void Awake()
         {
             ResolveRefs();
             _targetDistance = _distance;
+            _targetYaw = _yaw;
         }
 
         private void Start()
@@ -59,6 +70,7 @@ namespace SeasonalBastion
             if (!_initialized)
                 InitializeFromRuntime();
 
+            HandleRotation();
             HandleMovement();
             HandleZoom();
             ClampFocusPoint();
@@ -105,6 +117,40 @@ namespace SeasonalBastion
             _initialized = true;
         }
 
+        private void HandleRotation()
+        {
+            if (WasPressedThisFrame(_rotateLeftKey))
+                _targetYaw -= _rotateStepDegrees;
+            if (WasPressedThisFrame(_rotateRightKey))
+                _targetYaw += _rotateStepDegrees;
+
+            if (_enableMouseRotate && Mouse.current != null)
+            {
+                bool rotateHeld = Mouse.current.middleButton.isPressed;
+                Vector2 pointer = Mouse.current.position.ReadValue();
+
+                if (rotateHeld && !_rotateDragging)
+                {
+                    _rotateDragging = true;
+                    _lastPointerPosition = pointer;
+                    return;
+                }
+
+                if (!rotateHeld)
+                {
+                    _rotateDragging = false;
+                }
+                else
+                {
+                    Vector2 delta = pointer - _lastPointerPosition;
+                    _lastPointerPosition = pointer;
+                    _targetYaw += delta.x * _mouseRotateSpeed * Time.deltaTime * 60f;
+                }
+            }
+
+            _yaw = Mathf.LerpAngle(_yaw, _targetYaw, 1f - Mathf.Exp(-_yawSmooth * Time.deltaTime));
+        }
+
         private void HandleMovement()
         {
             if (_camera == null)
@@ -118,7 +164,10 @@ namespace SeasonalBastion
             Vector3 input = planarRight * horizontal + planarForward * vertical;
 
             if (_enableEdgePan)
-                input += planarRight * GetEdgePanInput().x + planarForward * GetEdgePanInput().z;
+            {
+                Vector3 edgeInput = GetEdgePanInput();
+                input += planarRight * edgeInput.x + planarForward * edgeInput.z;
+            }
 
             if (input.sqrMagnitude > 0.0001f)
             {
@@ -135,19 +184,19 @@ namespace SeasonalBastion
             if (!_enableMouseDragPan || Mouse.current == null)
                 return;
 
-            bool dragHeld = Mouse.current.rightButton.isPressed || Mouse.current.middleButton.isPressed;
+            bool dragHeld = Mouse.current.rightButton.isPressed;
             Vector2 pointer = Mouse.current.position.ReadValue();
 
-            if (dragHeld && !_dragging)
+            if (dragHeld && !_panDragging)
             {
-                _dragging = true;
+                _panDragging = true;
                 _lastPointerPosition = pointer;
                 return;
             }
 
             if (!dragHeld)
             {
-                _dragging = false;
+                _panDragging = false;
                 return;
             }
 
@@ -257,6 +306,19 @@ namespace SeasonalBastion
             {
                 KeyCode.LeftShift => Keyboard.current.leftShiftKey.isPressed,
                 KeyCode.RightShift => Keyboard.current.rightShiftKey.isPressed,
+                _ => false,
+            };
+        }
+
+        private static bool WasPressedThisFrame(KeyCode key)
+        {
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.Q => Keyboard.current.qKey.wasPressedThisFrame,
+                KeyCode.E => Keyboard.current.eKey.wasPressedThisFrame,
                 _ => false,
             };
         }
