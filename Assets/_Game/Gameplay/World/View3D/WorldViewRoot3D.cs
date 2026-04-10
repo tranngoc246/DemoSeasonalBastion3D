@@ -219,7 +219,9 @@ namespace SeasonalBastion
             if (renderer == null)
                 return;
 
-            renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            if (shader != null)
+                renderer.sharedMaterial = new Material(shader);
             renderer.sharedMaterial.color = new Color(1f, 0.6f, 0.1f, 0.65f);
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;

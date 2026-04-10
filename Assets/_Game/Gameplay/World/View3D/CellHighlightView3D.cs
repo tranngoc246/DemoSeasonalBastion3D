@@ -97,7 +97,9 @@ namespace SeasonalBastion
                 Destroy(col);
 
             Renderer renderer = go.GetComponent<Renderer>();
-            renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            if (shader != null)
+                renderer.sharedMaterial = new Material(shader);
             renderer.sharedMaterial.color = color;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
