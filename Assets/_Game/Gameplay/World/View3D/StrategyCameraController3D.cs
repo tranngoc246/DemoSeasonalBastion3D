@@ -1,5 +1,6 @@
 using SeasonalBastion.Contracts;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SeasonalBastion
 {
@@ -94,8 +95,8 @@ namespace SeasonalBastion
             if (_camera == null)
                 return;
 
-            float horizontal = Input.GetAxisRaw("Horizontal");
-            float vertical = Input.GetAxisRaw("Vertical");
+            float horizontal = ReadHorizontal();
+            float vertical = ReadVertical();
             Vector3 input = new(horizontal, 0f, vertical);
 
             if (_enableEdgePan)
@@ -107,14 +108,14 @@ namespace SeasonalBastion
             input = Vector3.ClampMagnitude(input, 1f);
             Vector3 forward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
             Vector3 right = Vector3.ProjectOnPlane(_camera.transform.right, Vector3.up).normalized;
-            float speed = _moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? _fastMoveMultiplier : 1f);
+            float speed = _moveSpeed * (IsPressed(KeyCode.LeftShift) ? _fastMoveMultiplier : 1f);
             _focusPoint += (right * input.x + forward * input.z) * (speed * Time.deltaTime);
         }
 
         private Vector3 GetEdgePanInput()
         {
             Vector3 input = Vector3.zero;
-            Vector3 mouse = Input.mousePosition;
+            Vector3 mouse = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector3.zero;
 
             if (mouse.x <= _edgePanSize) input.x -= 1f;
             else if (mouse.x >= Screen.width - _edgePanSize) input.x += 1f;
@@ -127,7 +128,7 @@ namespace SeasonalBastion
 
         private void HandleZoom()
         {
-            float scroll = Input.mouseScrollDelta.y;
+            float scroll = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
             if (Mathf.Abs(scroll) > 0.001f)
                 _targetDistance -= scroll * _zoomSpeed * Time.deltaTime;
 
@@ -169,6 +170,43 @@ namespace SeasonalBastion
 
             _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetPosition, 1f - Mathf.Exp(-12f * Time.deltaTime));
             _camera.transform.rotation = rotation;
+        }
+
+        private static float ReadHorizontal()
+        {
+            float value = 0f;
+            if (Keyboard.current == null)
+                return value;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                value -= 1f;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                value += 1f;
+            return value;
+        }
+
+        private static float ReadVertical()
+        {
+            float value = 0f;
+            if (Keyboard.current == null)
+                return value;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+                value -= 1f;
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+                value += 1f;
+            return value;
+        }
+
+        private static bool IsPressed(KeyCode key)
+        {
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.LeftShift => Keyboard.current.leftShiftKey.isPressed,
+                KeyCode.RightShift => Keyboard.current.rightShiftKey.isPressed,
+                _ => false,
+            };
         }
     }
 }

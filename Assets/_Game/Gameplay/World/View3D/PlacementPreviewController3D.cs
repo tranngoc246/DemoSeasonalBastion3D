@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using SeasonalBastion.Contracts;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SeasonalBastion
 {
@@ -92,10 +93,10 @@ namespace SeasonalBastion
             if (!_placementMode)
                 return;
 
-            if (Input.GetKeyDown(_rotateKey))
+            if (WasPressedThisFrame(_rotateKey))
                 _rotation = NextRotation(_rotation);
 
-            if (Input.GetKeyDown(_confirmKey))
+            if (WasPressedThisFrame(_confirmKey))
                 TryCommitPlacement();
         }
 
@@ -252,6 +253,33 @@ namespace SeasonalBastion
             }
 
             _debugPlacementText = _debugLabelBuilder.ToString();
+        }
+
+        private static bool WasPressedThisFrame(KeyCode key)
+        {
+            if (Mouse.current != null)
+            {
+                switch (key)
+                {
+                    case KeyCode.Mouse0:
+                        return Mouse.current.leftButton.wasPressedThisFrame;
+                    case KeyCode.Mouse1:
+                        return Mouse.current.rightButton.wasPressedThisFrame;
+                    case KeyCode.Mouse2:
+                        return Mouse.current.middleButton.wasPressedThisFrame;
+                }
+            }
+
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.R => Keyboard.current.rKey.wasPressedThisFrame,
+                KeyCode.Space => Keyboard.current.spaceKey.wasPressedThisFrame,
+                KeyCode.Return => Keyboard.current.enterKey.wasPressedThisFrame,
+                _ => false,
+            };
         }
 
         private static Dir4 NextRotation(Dir4 rotation)

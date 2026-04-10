@@ -1,5 +1,6 @@
 using SeasonalBastion.Contracts;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SeasonalBastion
 {
@@ -47,7 +48,7 @@ namespace SeasonalBastion
 
         private void UpdateSelection()
         {
-            if (!Input.GetKeyDown(_selectKey))
+            if (!WasPressedThisFrame(_selectKey))
                 return;
 
             if (!HasHoveredCell)
@@ -76,7 +77,8 @@ namespace SeasonalBastion
             if (_camera == null || _runtimeHost == null || _runtimeHost.Mapper == null)
                 return false;
 
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+            Ray ray = _camera.ScreenPointToRay(pointer);
             if (!Physics.Raycast(ray, out var hit, 5000f, _rayMask, QueryTriggerInteraction.Ignore))
                 return false;
 
@@ -85,6 +87,32 @@ namespace SeasonalBastion
                 return false;
 
             return true;
+        }
+
+        private static bool WasPressedThisFrame(KeyCode key)
+        {
+            if (Mouse.current != null)
+            {
+                switch (key)
+                {
+                    case KeyCode.Mouse0:
+                        return Mouse.current.leftButton.wasPressedThisFrame;
+                    case KeyCode.Mouse1:
+                        return Mouse.current.rightButton.wasPressedThisFrame;
+                    case KeyCode.Mouse2:
+                        return Mouse.current.middleButton.wasPressedThisFrame;
+                }
+            }
+
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.Space => Keyboard.current.spaceKey.wasPressedThisFrame,
+                KeyCode.Return => Keyboard.current.enterKey.wasPressedThisFrame,
+                _ => false,
+            };
         }
     }
 }

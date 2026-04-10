@@ -17,6 +17,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - Placement feedback is still debug-level, not proper runtime HUD/UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 - Clean scene creation now has an editor automation path, but it still needs real Unity compile/open verification.
+- New camera/selection/placement input path has been moved away from legacy `UnityEngine.Input`, but still needs runtime verification in Unity.
 
 ---
 
@@ -157,6 +158,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [ ] Reduce `FindObjectOfType` coupling
 - [ ] Move from polling refresh to event-driven refresh
 - [ ] Open/generated scene verified in Unity
+- [x] Remove legacy `UnityEngine.Input` dependency from newly added 3D camera/interaction scripts
 
 ### 3.3 Interaction
 **Status:** In progress
