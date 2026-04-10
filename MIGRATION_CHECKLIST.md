@@ -185,6 +185,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [x] Add strategy camera controller for 3D terrain
 - [x] Improve strategy camera startup framing, drag-pan, and zoom usability
 - [x] Add strategy camera rotation controls (Q/E step rotate, middle-mouse rotate drag)
+- [x] Add camera reset/focus-to-map-center behavior at startup and on demand
 - [ ] Add proper placement mode switching / selected building type UI
 - [x] Add minimal 3D-friendly runtime placement HUD
 - [x] Add basic inspect HUD alongside placement status

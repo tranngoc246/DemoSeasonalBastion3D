@@ -33,6 +33,7 @@ namespace SeasonalBastion
         [SerializeField] private float _yawSmooth = 12f;
         [SerializeField] private KeyCode _rotateLeftKey = KeyCode.Q;
         [SerializeField] private KeyCode _rotateRightKey = KeyCode.E;
+        [SerializeField] private KeyCode _resetCameraKey = KeyCode.F;
 
         [Header("Zoom")]
         [SerializeField] private float _zoomStep = 8f;
@@ -45,6 +46,8 @@ namespace SeasonalBastion
         private Vector3 _focusPoint;
         private float _targetDistance;
         private float _targetYaw;
+        private float _defaultDistance;
+        private float _defaultYaw;
         private bool _initialized;
         private bool _panDragging;
         private bool _rotateDragging;
@@ -55,6 +58,8 @@ namespace SeasonalBastion
             ResolveRefs();
             _targetDistance = _distance;
             _targetYaw = _yaw;
+            _defaultDistance = _distance;
+            _defaultYaw = _yaw;
         }
 
         private void Start()
@@ -108,17 +113,26 @@ namespace SeasonalBastion
             {
                 float mapSpan = Mathf.Max(_runtimeHost.GridMap.Width, _runtimeHost.GridMap.Height) * _runtimeHost.Mapper.CellSize;
                 float fitted = Mathf.Clamp(mapSpan * 0.55f, _minDistance, _maxDistance);
-                _distance = fitted;
-                _targetDistance = fitted;
+                _defaultDistance = fitted;
+            }
+            else
+            {
+                _defaultDistance = _distance;
             }
 
-            ClampFocusPoint();
-            ApplyCamera(true);
+            _defaultYaw = _yaw;
+            ResetToMapCenter(true);
             _initialized = true;
         }
 
         private void HandleRotation()
         {
+            if (WasPressedThisFrame(_resetCameraKey))
+            {
+                ResetToMapCenter(false);
+                return;
+            }
+
             if (WasPressedThisFrame(_rotateLeftKey))
                 _targetYaw -= _rotateStepDegrees;
             if (WasPressedThisFrame(_rotateRightKey))
@@ -254,6 +268,23 @@ namespace SeasonalBastion
                 _focusPoint.y = _runtimeHost.Mapper.GetHeightAtCell(focusCell);
         }
 
+        private void ResetToMapCenter(bool immediate)
+        {
+            if (_runtimeHost?.GridMap == null || _runtimeHost.Mapper == null)
+                return;
+
+            int centerX = Mathf.Max(0, _runtimeHost.GridMap.Width / 2);
+            int centerY = Mathf.Max(0, _runtimeHost.GridMap.Height / 2);
+            CellPos centerCell = new(centerX, centerY);
+            _focusPoint = _runtimeHost.Mapper.CellToWorldCenter(centerCell);
+            _targetDistance = Mathf.Clamp(_defaultDistance, _minDistance, _maxDistance);
+            _distance = _targetDistance;
+            _targetYaw = _defaultYaw;
+            _yaw = _targetYaw;
+            ClampFocusPoint();
+            ApplyCamera(immediate);
+        }
+
         private void ApplyCamera(bool immediate)
         {
             if (_camera == null)
@@ -319,6 +350,7 @@ namespace SeasonalBastion
             {
                 KeyCode.Q => Keyboard.current.qKey.wasPressedThisFrame,
                 KeyCode.E => Keyboard.current.eKey.wasPressedThisFrame,
+                KeyCode.F => Keyboard.current.fKey.wasPressedThisFrame,
                 _ => false,
             };
         }
