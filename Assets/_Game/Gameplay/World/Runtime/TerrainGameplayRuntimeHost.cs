@@ -5,6 +5,9 @@ using SeasonalBastion.WorldGen.Runtime.Generators;
 using SeasonalBastion.WorldGen.Runtime.Meshes;
 using SeasonalBastion.WorldGen.Runtime.Models;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace SeasonalBastion
 {
@@ -72,6 +75,26 @@ namespace SeasonalBastion
                 if (_heightSettings == null)
                     _heightSettings = _previewController.heightSettings;
             }
+
+            ResolveGeneratedAssetFallbacks();
+        }
+
+        private void ResolveGeneratedAssetFallbacks()
+        {
+            if (_meshSettings != null && _heightSettings != null)
+                return;
+
+#if UNITY_EDITOR
+            if (_meshSettings == null)
+                _meshSettings = AssetDatabase.LoadAssetAtPath<WorldMeshSettings>("Assets/_Game/Generated/WorldMeshSettings.asset");
+            if (_heightSettings == null)
+                _heightSettings = AssetDatabase.LoadAssetAtPath<WorldHeightSettings>("Assets/_Game/Generated/WorldHeightSettings.asset");
+#endif
+
+            if (_meshSettings == null)
+                _meshSettings = Resources.Load<WorldMeshSettings>("WorldMeshSettings");
+            if (_heightSettings == null)
+                _heightSettings = Resources.Load<WorldHeightSettings>("WorldHeightSettings");
         }
 
         private void BuildRuntimeTerrainMesh()
