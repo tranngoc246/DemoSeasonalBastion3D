@@ -4,6 +4,7 @@ using SeasonalBastion.WorldGen.Authoring.ScriptableObjects;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -209,7 +210,7 @@ namespace SeasonalBastion.Editor
 
             var go = new GameObject("EventSystem");
             go.AddComponent<UnityEngine.EventSystems.EventSystem>();
-            go.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+            go.AddComponent<InputSystemUIInputModule>();
         }
 
         private static void SetPrivate(Object target, string fieldName, Object value)

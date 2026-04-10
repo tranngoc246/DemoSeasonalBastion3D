@@ -18,6 +18,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
 - Clean scene creation now has an editor automation path, but it still needs real Unity compile/open verification.
 - New camera/selection/placement input path has been moved away from legacy `UnityEngine.Input`, but still needs runtime verification in Unity.
+- Generated scene and assets have now been created by Unity, but scene-side runtime components still need final Input System compatibility verification.
 
 ---
 
@@ -206,6 +207,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [x] A clean generated gameplay scene path exists (`SeasonalBastion/Create Demo Gameplay Scene` -> `Assets/Scenes/DemoGameplayScene.unity`)
 - [ ] `SampleScene` can initialize terrain gameplay runtime
 - [ ] Generated `DemoGameplayScene` opens and initializes correctly in Unity
+- [x] Generated scene path now uses `InputSystemUIInputModule` instead of legacy `StandaloneInputModule`
 - [ ] Grid maps correctly onto terrain
 - [ ] Hover/select works on terrain cells
 - [ ] Placement preview matches gameplay validation
