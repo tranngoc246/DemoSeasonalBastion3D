@@ -2,6 +2,7 @@ using SeasonalBastion.Contracts;
 using SeasonalBastion.WorldGen.Authoring.MonoBehaviours;
 using SeasonalBastion.WorldGen.Authoring.ScriptableObjects;
 using SeasonalBastion.WorldGen.Runtime.Generators;
+using SeasonalBastion.WorldGen.Runtime.Meshes;
 using SeasonalBastion.WorldGen.Runtime.Models;
 using UnityEngine;
 
@@ -18,6 +19,12 @@ namespace SeasonalBastion
 
         [Header("World placement")]
         [SerializeField] private Vector3 _worldOrigin = Vector3.zero;
+
+        [Header("Optional runtime terrain output")]
+        [SerializeField] private MeshFilter _runtimeMeshFilter;
+        [SerializeField] private MeshRenderer _runtimeMeshRenderer;
+        [SerializeField] private MeshCollider _runtimeMeshCollider;
+        [SerializeField] private Material _runtimeTerrainMaterial;
 
         public WorldGenerationResult GeneratedWorld { get; private set; }
         public GridMap GridMap { get; private set; }
@@ -50,6 +57,7 @@ namespace SeasonalBastion
             Mapper = new CellWorldMapper3D(_meshSettings, GeneratedWorld, _worldOrigin);
             Bridge = new TerrainGameplayBridge(GeneratedWorld, GridMap);
             Bridge.ApplyEmptyGameplayGridFromTerrain();
+            BuildRuntimeTerrainMesh();
         }
 
         private void ResolveSettings()
@@ -64,6 +72,52 @@ namespace SeasonalBastion
                 if (_heightSettings == null)
                     _heightSettings = _previewController.heightSettings;
             }
+        }
+
+        private void BuildRuntimeTerrainMesh()
+        {
+            if (_runtimeMeshFilter == null)
+                _runtimeMeshFilter = GetComponent<MeshFilter>();
+            if (_runtimeMeshRenderer == null)
+                _runtimeMeshRenderer = GetComponent<MeshRenderer>();
+            if (_runtimeMeshCollider == null)
+                _runtimeMeshCollider = GetComponent<MeshCollider>();
+
+            if (_runtimeMeshFilter == null || _meshSettings == null || GeneratedWorld?.HeightMap == null)
+                return;
+
+            MeshData meshData = TerrainMeshGenerator.GenerateTerrainMesh(GeneratedWorld.HeightMap, _meshSettings, 0);
+            Mesh mesh = meshData.CreateMesh();
+            _runtimeMeshFilter.sharedMesh = mesh;
+
+            if (_runtimeMeshCollider != null)
+                _runtimeMeshCollider.sharedMesh = mesh;
+
+            if (_runtimeMeshRenderer != null)
+            {
+                Material material = ResolveRuntimeTerrainMaterial();
+                if (material != null)
+                    _runtimeMeshRenderer.sharedMaterial = material;
+            }
+        }
+
+        private Material ResolveRuntimeTerrainMaterial()
+        {
+            if (_runtimeTerrainMaterial != null)
+                return _runtimeTerrainMaterial;
+
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null)
+                shader = Shader.Find("Standard");
+            if (shader == null)
+                return null;
+
+            _runtimeTerrainMaterial = new Material(shader)
+            {
+                name = "RuntimeTerrainMaterial"
+            };
+            _runtimeTerrainMaterial.color = new Color(0.42f, 0.48f, 0.42f, 1f);
+            return _runtimeTerrainMaterial;
         }
 
         private WorldGenerationResult GenerateWorld()
