@@ -191,9 +191,9 @@ namespace SeasonalBastion
             float avgHeight = _runtimeHost.Mapper.GetAverageHeightForFootprint(anchor, sizeX, sizeY);
             float cellSize = _runtimeHost.Mapper.CellSize;
             Vector3 pos = new(
-                (anchor.X + sizeX * 0.5f) * cellSize,
-                avgHeight,
-                (anchor.Y + sizeY * 0.5f) * cellSize);
+                _runtimeHost.transform.position.x + (anchor.X + sizeX * 0.5f) * cellSize,
+                _runtimeHost.transform.position.y + avgHeight,
+                _runtimeHost.transform.position.z + (anchor.Y + sizeY * 0.5f) * cellSize);
 
             target.position = pos + extraOffset;
         }

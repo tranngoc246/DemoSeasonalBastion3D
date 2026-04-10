@@ -31,6 +31,9 @@ namespace SeasonalBastion
         [SerializeField] private float _mouseRotateSpeed = 0.18f;
         [SerializeField] private float _rotateStepDegrees = 45f;
         [SerializeField] private float _yawSmooth = 12f;
+        [SerializeField] private float _pitchSmooth = 12f;
+        [SerializeField] private float _minPitch = 25f;
+        [SerializeField] private float _maxPitch = 80f;
         [SerializeField] private KeyCode _rotateLeftKey = KeyCode.Q;
         [SerializeField] private KeyCode _rotateRightKey = KeyCode.E;
         [SerializeField] private KeyCode _resetCameraKey = KeyCode.F;
@@ -46,8 +49,10 @@ namespace SeasonalBastion
         private Vector3 _focusPoint;
         private float _targetDistance;
         private float _targetYaw;
+        private float _targetPitch;
         private float _defaultDistance;
         private float _defaultYaw;
+        private float _defaultPitch;
         private bool _initialized;
         private bool _panDragging;
         private bool _rotateDragging;
@@ -58,8 +63,11 @@ namespace SeasonalBastion
             ResolveRefs();
             _targetDistance = _distance;
             _targetYaw = _yaw;
+            _targetPitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
+            _pitch = _targetPitch;
             _defaultDistance = _distance;
             _defaultYaw = _yaw;
+            _defaultPitch = _pitch;
         }
 
         private void Start()
@@ -121,6 +129,7 @@ namespace SeasonalBastion
             }
 
             _defaultYaw = _yaw;
+            _defaultPitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
             ResetToMapCenter(true);
             _initialized = true;
         }
@@ -158,11 +167,14 @@ namespace SeasonalBastion
                 {
                     Vector2 delta = pointer - _lastPointerPosition;
                     _lastPointerPosition = pointer;
-                    _targetYaw += delta.x * _mouseRotateSpeed * Time.deltaTime * 60f;
+                    float rotateScale = _mouseRotateSpeed * Time.deltaTime * 60f;
+                    _targetYaw += delta.x * rotateScale;
+                    _targetPitch = Mathf.Clamp(_targetPitch - delta.y * rotateScale, _minPitch, _maxPitch);
                 }
             }
 
             _yaw = Mathf.LerpAngle(_yaw, _targetYaw, 1f - Mathf.Exp(-_yawSmooth * Time.deltaTime));
+            _pitch = Mathf.Lerp(_pitch, _targetPitch, 1f - Mathf.Exp(-_pitchSmooth * Time.deltaTime));
         }
 
         private void HandleMovement()
@@ -281,6 +293,8 @@ namespace SeasonalBastion
             _distance = _targetDistance;
             _targetYaw = _defaultYaw;
             _yaw = _targetYaw;
+            _targetPitch = _defaultPitch;
+            _pitch = _targetPitch;
             ClampFocusPoint();
             ApplyCamera(immediate);
         }
