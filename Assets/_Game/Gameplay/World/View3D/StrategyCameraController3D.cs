@@ -11,29 +11,34 @@ namespace SeasonalBastion
         [SerializeField] private TerrainGameplayRuntimeHost _runtimeHost;
 
         [Header("View")]
-        [SerializeField] private float _pitch = 55f;
+        [SerializeField] private float _pitch = 60f;
         [SerializeField] private float _yaw = 45f;
-        [SerializeField] private float _distance = 36f;
-        [SerializeField] private float _minDistance = 12f;
-        [SerializeField] private float _maxDistance = 80f;
+        [SerializeField] private float _distance = 56f;
+        [SerializeField] private float _minDistance = 20f;
+        [SerializeField] private float _maxDistance = 120f;
+        [SerializeField] private bool _fitToMapOnStart = true;
 
         [Header("Movement")]
-        [SerializeField] private float _moveSpeed = 30f;
+        [SerializeField] private float _moveSpeed = 40f;
         [SerializeField] private float _fastMoveMultiplier = 2f;
-        [SerializeField] private float _edgePanSize = 16f;
+        [SerializeField] private float _dragPanSpeed = 0.18f;
+        [SerializeField] private float _edgePanSize = 20f;
         [SerializeField] private bool _enableEdgePan = true;
+        [SerializeField] private bool _enableMouseDragPan = true;
 
         [Header("Zoom")]
-        [SerializeField] private float _zoomSpeed = 120f;
+        [SerializeField] private float _zoomStep = 8f;
         [SerializeField] private float _zoomSmooth = 12f;
 
         [Header("Bounds")]
-        [SerializeField] private float _boundsPadding = 4f;
+        [SerializeField] private float _boundsPadding = 6f;
         [SerializeField] private bool _snapToTerrainCenterOnStart = true;
 
         private Vector3 _focusPoint;
         private float _targetDistance;
         private bool _initialized;
+        private bool _dragging;
+        private Vector2 _lastPointerPosition;
 
         private void Awake()
         {
@@ -67,7 +72,7 @@ namespace SeasonalBastion
             if (_camera == null)
                 _camera = Camera.main;
             if (_runtimeHost == null)
-                _runtimeHost = FindObjectOfType<TerrainGameplayRuntimeHost>();
+                _runtimeHost = FindFirstObjectByType<TerrainGameplayRuntimeHost>();
         }
 
         private void InitializeFromRuntime()
@@ -87,6 +92,16 @@ namespace SeasonalBastion
                 _focusPoint = _runtimeHost.Mapper.CellToWorldCenter(centerCell);
             }
 
+            if (_fitToMapOnStart)
+            {
+                float mapSpan = Mathf.Max(_runtimeHost.GridMap.Width, _runtimeHost.GridMap.Height) * _runtimeHost.Mapper.CellSize;
+                float fitted = Mathf.Clamp(mapSpan * 0.55f, _minDistance, _maxDistance);
+                _distance = fitted;
+                _targetDistance = fitted;
+            }
+
+            ClampFocusPoint();
+            ApplyCamera(true);
             _initialized = true;
         }
 
@@ -95,33 +110,70 @@ namespace SeasonalBastion
             if (_camera == null)
                 return;
 
+            Vector3 planarForward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
+            Vector3 planarRight = Vector3.ProjectOnPlane(_camera.transform.right, Vector3.up).normalized;
+
             float horizontal = ReadHorizontal();
             float vertical = ReadVertical();
-            Vector3 input = new(horizontal, 0f, vertical);
+            Vector3 input = planarRight * horizontal + planarForward * vertical;
 
             if (_enableEdgePan)
-                input += GetEdgePanInput();
+                input += planarRight * GetEdgePanInput().x + planarForward * GetEdgePanInput().z;
 
-            if (input.sqrMagnitude <= 0.0001f)
+            if (input.sqrMagnitude > 0.0001f)
+            {
+                input = Vector3.ClampMagnitude(input, 1f);
+                float speed = _moveSpeed * (IsPressed(KeyCode.LeftShift) ? _fastMoveMultiplier : 1f);
+                _focusPoint += input * (speed * Time.deltaTime);
+            }
+
+            HandleDragPan(planarRight, planarForward);
+        }
+
+        private void HandleDragPan(Vector3 planarRight, Vector3 planarForward)
+        {
+            if (!_enableMouseDragPan || Mouse.current == null)
                 return;
 
-            input = Vector3.ClampMagnitude(input, 1f);
-            Vector3 forward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
-            Vector3 right = Vector3.ProjectOnPlane(_camera.transform.right, Vector3.up).normalized;
-            float speed = _moveSpeed * (IsPressed(KeyCode.LeftShift) ? _fastMoveMultiplier : 1f);
-            _focusPoint += (right * input.x + forward * input.z) * (speed * Time.deltaTime);
+            bool dragHeld = Mouse.current.rightButton.isPressed || Mouse.current.middleButton.isPressed;
+            Vector2 pointer = Mouse.current.position.ReadValue();
+
+            if (dragHeld && !_dragging)
+            {
+                _dragging = true;
+                _lastPointerPosition = pointer;
+                return;
+            }
+
+            if (!dragHeld)
+            {
+                _dragging = false;
+                return;
+            }
+
+            Vector2 delta = pointer - _lastPointerPosition;
+            _lastPointerPosition = pointer;
+            if (delta.sqrMagnitude <= 0.0001f)
+                return;
+
+            float dragScale = _dragPanSpeed * Mathf.Max(1f, _distance * 0.05f);
+            _focusPoint -= planarRight * (delta.x * dragScale * Time.deltaTime);
+            _focusPoint -= planarForward * (delta.y * dragScale * Time.deltaTime);
         }
 
         private Vector3 GetEdgePanInput()
         {
+            if (Mouse.current == null)
+                return Vector3.zero;
+
             Vector3 input = Vector3.zero;
-            Vector3 mouse = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector3.zero;
+            Vector2 mouse = Mouse.current.position.ReadValue();
 
-            if (mouse.x <= _edgePanSize) input.x -= 1f;
-            else if (mouse.x >= Screen.width - _edgePanSize) input.x += 1f;
+            if (mouse.x > 0f && mouse.x <= _edgePanSize) input.x -= 1f;
+            else if (mouse.x < Screen.width && mouse.x >= Screen.width - _edgePanSize) input.x += 1f;
 
-            if (mouse.y <= _edgePanSize) input.z -= 1f;
-            else if (mouse.y >= Screen.height - _edgePanSize) input.z += 1f;
+            if (mouse.y > 0f && mouse.y <= _edgePanSize) input.z -= 1f;
+            else if (mouse.y < Screen.height && mouse.y >= Screen.height - _edgePanSize) input.z += 1f;
 
             return input;
         }
@@ -130,7 +182,7 @@ namespace SeasonalBastion
         {
             float scroll = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
             if (Mathf.Abs(scroll) > 0.001f)
-                _targetDistance -= scroll * _zoomSpeed * Time.deltaTime;
+                _targetDistance -= Mathf.Sign(scroll) * _zoomStep;
 
             _targetDistance = Mathf.Clamp(_targetDistance, _minDistance, _maxDistance);
             _distance = Mathf.Lerp(_distance, _targetDistance, 1f - Mathf.Exp(-_zoomSmooth * Time.deltaTime));

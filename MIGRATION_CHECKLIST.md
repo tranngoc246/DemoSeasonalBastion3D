@@ -183,6 +183,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - [x] Add minimal inspect/selection HUD for cells/buildings/sites
 - [ ] Expand inspect model to NPC/enemy/site actions and richer details
 - [x] Add strategy camera controller for 3D terrain
+- [x] Improve strategy camera startup framing, drag-pan, and zoom usability
 - [ ] Add proper placement mode switching / selected building type UI
 - [x] Add minimal 3D-friendly runtime placement HUD
 - [x] Add basic inspect HUD alongside placement status
@@ -225,8 +226,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 1. Run a real Unity compile/scene verification pass, preferably by generating/opening `DemoGameplayScene` first.
 2. Verify the generated scene installer wires camera/runtime/view components correctly in Unity.
 3. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
-4. Expand the minimal HUDs into a more complete runtime HUD/UI flow, including richer inspect details and actions.
-5. Then move toward worker-driven construction flow.
+4. Further tune camera feel and generated-scene usability based on live Unity testing.
+5. Expand the minimal HUDs into a more complete runtime HUD/UI flow, including richer inspect details and actions.
+6. Then move toward worker-driven construction flow.
 
 ---
 
