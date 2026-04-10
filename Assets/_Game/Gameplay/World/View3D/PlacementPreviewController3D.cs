@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using SeasonalBastion.Contracts;
 using UnityEngine;
 
@@ -20,11 +21,15 @@ namespace SeasonalBastion
         [SerializeField] private Color _entryRoadColor = new(1f, 0.9f, 0.15f, 0.55f);
         [SerializeField] private float _heightOffset = 0.12f;
         [SerializeField] private float _cellFill = 0.9f;
+        [SerializeField] private bool _showDebugPlacementLabel = true;
+        [SerializeField] private Vector2 _debugLabelScreenOffset = new(16f, 16f);
 
         private readonly List<GameObject> _footprintMarkers = new();
+        private readonly StringBuilder _debugLabelBuilder = new();
         private GameObject _entryMarker;
         private PlacementResult _lastResult;
         private BuildingDef _lastDef;
+        private string _debugPlacementText = string.Empty;
 
         private void Awake()
         {
@@ -41,6 +46,16 @@ namespace SeasonalBastion
         {
             ResolveRefs();
             RefreshPreview();
+        }
+
+        private void OnGUI()
+        {
+            if (!_showDebugPlacementLabel || string.IsNullOrEmpty(_debugPlacementText))
+                return;
+
+            GUI.color = _lastResult.Ok ? Color.white : new Color(1f, 0.8f, 0.8f, 1f);
+            GUI.Label(new Rect(_debugLabelScreenOffset.x, _debugLabelScreenOffset.y, 520f, 80f), _debugPlacementText);
+            GUI.color = Color.white;
         }
 
         public void SetActiveBuilding(string buildingDefId)
@@ -91,24 +106,28 @@ namespace SeasonalBastion
 
             if (!_placementMode || _runtimeHost == null || _runtimeHost.Mapper == null || _gameplayBootstrap == null || _selection == null)
             {
+                _debugPlacementText = string.Empty;
                 HideAll();
                 return;
             }
 
             if (!_selection.HasHoveredCell)
             {
+                _debugPlacementText = "Placement: hover a cell";
                 HideAll();
                 return;
             }
 
             if (_gameplayBootstrap.Data == null || !_gameplayBootstrap.Data.TryGetBuilding(_activeBuildingDefId, out var def) || def == null)
             {
+                _debugPlacementText = "Placement: missing building def";
                 HideAll();
                 return;
             }
 
             _lastDef = def;
             _lastResult = _gameplayBootstrap.Placement.ValidateBuilding(_activeBuildingDefId, _selection.HoveredCell, _rotation);
+            UpdateDebugPlacementText(_selection.HoveredCell, _rotation, _lastResult);
             GetFootprintSize(def, _rotation, out int footprintWidth, out int footprintHeight);
             EnsureFootprintMarkers(Mathf.Max(1, footprintWidth * footprintHeight));
 
@@ -205,6 +224,34 @@ namespace SeasonalBastion
                 _footprintMarkers[i].SetActive(false);
             if (_entryMarker != null)
                 _entryMarker.SetActive(false);
+        }
+
+        private void UpdateDebugPlacementText(CellPos hoveredCell, Dir4 rotation, PlacementResult result)
+        {
+            _debugLabelBuilder.Clear();
+            _debugLabelBuilder.Append("Placement ");
+            _debugLabelBuilder.Append(result.Ok ? "OK" : "FAIL");
+            _debugLabelBuilder.Append(" | def=");
+            _debugLabelBuilder.Append(_activeBuildingDefId);
+            _debugLabelBuilder.Append(" | anchor=(");
+            _debugLabelBuilder.Append(hoveredCell.X);
+            _debugLabelBuilder.Append(',');
+            _debugLabelBuilder.Append(hoveredCell.Y);
+            _debugLabelBuilder.Append(") | rot=");
+            _debugLabelBuilder.Append(rotation);
+            _debugLabelBuilder.Append(" | entry=(");
+            _debugLabelBuilder.Append(result.SuggestedRoadCell.X);
+            _debugLabelBuilder.Append(',');
+            _debugLabelBuilder.Append(result.SuggestedRoadCell.Y);
+            _debugLabelBuilder.Append(')');
+
+            if (!result.Ok)
+            {
+                _debugLabelBuilder.Append(" | reason=");
+                _debugLabelBuilder.Append(result.FailReason);
+            }
+
+            _debugPlacementText = _debugLabelBuilder.ToString();
         }
 
         private static Dir4 NextRotation(Dir4 rotation)

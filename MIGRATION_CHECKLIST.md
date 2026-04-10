@@ -156,13 +156,13 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 3.3 Interaction
 **Status:** In progress
-**Blocked by:** No fail-reason UI yet
+**Blocked by:** Feedback is debug-level only, not proper runtime UI yet
 - [x] Add raycast world-to-cell selection
 - [x] Add hover/selection highlight
 - [x] Add placement footprint preview
 - [x] Add placement rotation input
 - [x] Add placement confirm input
-- [ ] Show placement failure reason in UI/debug label
+- [x] Show placement failure reason in UI/debug label
 - [x] Support footprint preview that respects rotation for non-square buildings
 
 ---
@@ -209,7 +209,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass in `SampleScene`.
 2. Verify terrain-aware placement behavior visually on valid/invalid cells, especially water, steep edges, and map borders.
-3. Add fail-reason UI/debug label so invalid placement feedback is visible in-scene.
+3. Replace debug placement label with proper runtime HUD/UI presentation.
 4. Then move toward worker-driven construction flow.
 
 ---
