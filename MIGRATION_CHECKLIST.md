@@ -6,9 +6,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~75%
-- **Current focus:** Phase A.3 / Phase 2.2 - terrain-derived runtime correctness and Unity verification
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, and a minimal build lifecycle is wired with terrain-aware placement, terrain-derived bounds, start zone, and spawn lanes, but runtime correctness and Unity verification are still incomplete.
+- **Progress:** ~78%
+- **Current focus:** Phase 3.2 / Phase 4 - clean scene composition and runtime camera setup for Unity verification
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, and there is now a clean scene-generation path for a fresh gameplay scene, but Unity compile/runtime verification is still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
@@ -16,6 +16,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 - Terrain-derived start zone and spawn lanes are heuristic selections from terrain bounds, not yet gameplay-tuned paths/config.
 - Placement feedback is still debug-level, not proper runtime HUD/UI.
 - Runtime defs/registry are still demo/manual and not yet connected to a real loading path.
+- Clean scene creation now has an editor automation path, but it still needs real Unity compile/open verification.
 
 ---
 
@@ -149,11 +150,13 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 3.2 Runtime composition
 **Status:** In progress
-**Blocked by:** Scene still uses convenience lookups/polling
+**Blocked by:** Scene still uses convenience lookups/polling and clean scene path is not Unity-verified yet
 - [x] Add `GameplayRuntimeBootstrap`
 - [x] Bind `WorldViewRoot3D` to shared runtime
+- [x] Add editor script to generate a clean gameplay scene setup
 - [ ] Reduce `FindObjectOfType` coupling
 - [ ] Move from polling refresh to event-driven refresh
+- [ ] Open/generated scene verified in Unity
 
 ### 3.3 Interaction
 **Status:** In progress
@@ -169,11 +172,11 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Phase 4 - Replace 2D gameplay interaction with proper 3D gameplay interaction
-**Status:** Not started
-**Progress:** ~0%
-**Blocked by:** Core gameplay correctness should be stabilized first
+**Status:** In progress
+**Progress:** ~20%
+**Blocked by:** Core gameplay correctness and Unity scene verification are still pending
 - [ ] Add inspect/selection model for building/NPC/enemy/site
-- [ ] Add strategy camera controller for 3D terrain
+- [x] Add strategy camera controller for 3D terrain
 - [ ] Add proper placement mode switching / selected building type UI
 - [ ] Add 3D-friendly runtime HUD/panels
 
@@ -197,7 +200,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 - [ ] Unity project compiles cleanly
 - [x] `SampleScene` exists as the current integration scene target
+- [x] A clean generated gameplay scene path exists (`SeasonalBastion/Create Demo Gameplay Scene` -> `Assets/Scenes/DemoGameplayScene.unity`)
 - [ ] `SampleScene` can initialize terrain gameplay runtime
+- [ ] Generated `DemoGameplayScene` opens and initializes correctly in Unity
 - [ ] Grid maps correctly onto terrain
 - [ ] Hover/select works on terrain cells
 - [ ] Placement preview matches gameplay validation
@@ -208,7 +213,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Recommended Next Step
-1. Run a real Unity compile/scene verification pass in `SampleScene`.
+1. Run a real Unity compile/scene verification pass, preferably by generating/opening `DemoGameplayScene` first.
 2. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
 3. Replace debug placement label with proper runtime HUD/UI presentation.
 4. Then move toward worker-driven construction flow.
