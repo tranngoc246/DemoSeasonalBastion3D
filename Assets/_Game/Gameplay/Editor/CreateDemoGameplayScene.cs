@@ -37,7 +37,8 @@ namespace SeasonalBastion.Editor
             var bootstrap = CreateGameplayBootstrap(terrainRoot);
             var worldView = CreateWorldView(prefabCatalog, terrainRoot, bootstrap);
             SetPrivate(bootstrap, "_worldView", worldView);
-            CreateSelectionAndPreview(camera, terrainRoot, bootstrap, worldView);
+            var selectionBundle = CreateSelectionAndPreview(camera, terrainRoot, bootstrap, worldView);
+            CreateInstaller(camera, terrainRoot, bootstrap, worldView, selectionBundle.selection, selectionBundle.highlight, selectionBundle.preview);
             CreateEventSystemIfMissing();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -161,7 +162,7 @@ namespace SeasonalBastion.Editor
             return view;
         }
 
-        private static void CreateSelectionAndPreview(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView)
+        private static (WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview) CreateSelectionAndPreview(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView)
         {
             var selectionGo = new GameObject("WorldSelection");
             var selection = selectionGo.AddComponent<WorldSelectionController3D>();
@@ -182,6 +183,23 @@ namespace SeasonalBastion.Editor
             SetPrivate(preview, "_worldView", worldView);
             SetPrivate(preview, "_placementMode", true);
             SetEnumPrivate(preview, "_confirmKey", KeyCode.Mouse1);
+            return (selection, highlight, preview);
+        }
+
+        private static void CreateInstaller(Camera camera, TerrainGameplayRuntimeHost host, GameplayRuntimeBootstrap bootstrap, WorldViewRoot3D worldView, WorldSelectionController3D selection, CellHighlightView3D highlight, PlacementPreviewController3D preview)
+        {
+            var go = new GameObject("GameplaySceneInstaller3D");
+            var installer = go.AddComponent<GameplaySceneInstaller3D>();
+            SetPrivate(installer, "_camera", camera);
+            SetPrivate(installer, "_terrainHost", host);
+            SetPrivate(installer, "_bootstrap", bootstrap);
+            SetPrivate(installer, "_worldView", worldView);
+            SetPrivate(installer, "_selection", selection);
+            SetPrivate(installer, "_highlight", highlight);
+            SetPrivate(installer, "_preview", preview);
+            var strategyCamera = camera != null ? camera.GetComponent<StrategyCameraController3D>() : null;
+            if (strategyCamera != null)
+                SetPrivate(installer, "_strategyCamera", strategyCamera);
         }
 
         private static void CreateEventSystemIfMissing()

@@ -6,9 +6,9 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 ---
 
 ## Overall Status
-- **Progress:** ~78%
-- **Current focus:** Phase 3.2 / Phase 4 - clean scene composition and runtime camera setup for Unity verification
-- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, and there is now a clean scene-generation path for a fresh gameplay scene, but Unity compile/runtime verification is still incomplete.
+- **Progress:** ~79%
+- **Current focus:** Phase 3.2 / Phase 4 - clean scene composition, explicit scene wiring, and runtime camera setup for Unity verification
+- **Current state:** Core gameplay foundation exists, terrain bridge exists, 3D interaction prototype exists, a minimal build lifecycle is wired with terrain-aware placement and terrain-derived bounds/start/lane data, there is a clean scene-generation path for a fresh gameplay scene, and the generated-scene path now has an explicit installer for runtime references, but Unity compile/runtime verification is still incomplete.
 
 ## Current Blockers
 - Unity compile has not been verified yet, because Unity reimport/compile has not been run from this environment.
@@ -151,11 +151,12 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### 3.2 Runtime composition
 **Status:** In progress
-**Blocked by:** Scene still uses convenience lookups/polling and clean scene path is not Unity-verified yet
+**Blocked by:** Scene still uses some convenience lookups/polling and clean scene path is not Unity-verified yet
 - [x] Add `GameplayRuntimeBootstrap`
 - [x] Bind `WorldViewRoot3D` to shared runtime
 - [x] Add editor script to generate a clean gameplay scene setup
-- [ ] Reduce `FindObjectOfType` coupling
+- [x] Add explicit installer wiring for generated-scene runtime references
+- [ ] Reduce remaining `FindObjectOfType` coupling outside generated-scene wiring
 - [ ] Move from polling refresh to event-driven refresh
 - [ ] Open/generated scene verified in Unity
 - [x] Remove legacy `UnityEngine.Input` dependency from newly added 3D camera/interaction scripts
@@ -216,9 +217,10 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass, preferably by generating/opening `DemoGameplayScene` first.
-2. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
-3. Replace debug placement label with proper runtime HUD/UI presentation.
-4. Then move toward worker-driven construction flow.
+2. Verify the generated scene installer wires camera/runtime/view components correctly in Unity.
+3. Verify terrain-derived HQ/start zone/spawn lanes visually and tune heuristics if needed.
+4. Replace debug placement label with proper runtime HUD/UI presentation.
+5. Then move toward worker-driven construction flow.
 
 ---
 
