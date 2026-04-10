@@ -26,6 +26,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+.vsconfig
 
 # Unity generated
 MemoryCaptures/
