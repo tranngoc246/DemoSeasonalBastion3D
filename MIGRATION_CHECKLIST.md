@@ -89,9 +89,10 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ### A2. Occupancy and placement correctness
 **Status:** In progress
-**Blocked by:** Needs runtime verification against scene data and full cleanup pass
-- [ ] Verify building footprint occupancy rules
-- [ ] Verify site footprint occupancy rules
+**Blocked by:** Needs runtime verification against scene data
+- [x] Align build/build-site occupancy footprint math with rotation-aware placement rules
+- [x] Verify building footprint occupancy rules
+- [x] Verify site footprint occupancy rules
 - [x] Verify road placement/removal baseline logic exists
 - [x] Verify driveway / entry-road auto-create baseline exists
 - [x] Verify destroy/remove transitions clean up grid correctly
@@ -208,7 +209,7 @@ Port gameplay core from `SeasonalBastionV2` into `DemoSeasonalBastion3D`, keep g
 
 ## Recommended Next Step
 1. Run a real Unity compile/scene verification pass in `SampleScene`.
-2. Verify terrain-aware placement behavior visually on valid/invalid cells, especially water, steep edges, and map borders.
+2. Verify rotated non-square placement/build/cancel flows visually in-scene.
 3. Replace debug placement label with proper runtime HUD/UI presentation.
 4. Then move toward worker-driven construction flow.
 
