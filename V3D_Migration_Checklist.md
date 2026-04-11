@@ -37,7 +37,7 @@
 - [x] Raycast works
 
 ### Debug
-- [ ] Hover cell debug visible
+- [x] Hover cell debug visible
 - [ ] Hover matches correct cell
 
 ---
