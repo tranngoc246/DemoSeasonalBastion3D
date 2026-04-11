@@ -32,7 +32,7 @@
 - [x] Camera bounds applied
 
 ### Scene
-- [ ] Ground plane exists
+- [x] Ground plane exists
 - [ ] Ground layer configured
 - [x] Raycast works
 
