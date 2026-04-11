@@ -9,8 +9,12 @@ namespace SeasonalBastion
         [SerializeField] private Camera _camera;
         [SerializeField] private TerrainGameplayRuntimeHost _runtimeHost;
         [SerializeField] private GameplayRuntimeBootstrap _gameplayBootstrap;
-        [SerializeField] private LayerMask _rayMask = ~0;
+        [SerializeField] private LayerMask _groundMask = ~0;
+        [SerializeField] private float _rayDistance = 5000f;
         [SerializeField] private KeyCode _selectKey = KeyCode.Mouse0;
+
+        private GroundRaycastService _groundRaycast;
+        private WorldToCellResolver3D _resolver;
 
         public bool HasHoveredCell { get; private set; }
         public CellPos HoveredCell { get; private set; }
@@ -38,6 +42,12 @@ namespace SeasonalBastion
                 _runtimeHost = FindObjectOfType<TerrainGameplayRuntimeHost>();
             if (_gameplayBootstrap == null)
                 _gameplayBootstrap = FindObjectOfType<GameplayRuntimeBootstrap>();
+
+            if (_runtimeHost != null && _runtimeHost.Mapper != null)
+            {
+                _groundRaycast ??= new GroundRaycastService(_groundMask, _rayDistance);
+                _resolver ??= new WorldToCellResolver3D(_groundRaycast, _runtimeHost.Mapper);
+            }
         }
 
         private void UpdateHover()
@@ -74,19 +84,11 @@ namespace SeasonalBastion
         public bool TryRaycastCell(out CellPos cell)
         {
             cell = default;
-            if (_camera == null || _runtimeHost == null || _runtimeHost.Mapper == null)
+            if (_camera == null || _resolver == null)
                 return false;
 
             Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
-            Ray ray = _camera.ScreenPointToRay(pointer);
-            if (!Physics.Raycast(ray, out var hit, 5000f, _rayMask, QueryTriggerInteraction.Ignore))
-                return false;
-
-            cell = _runtimeHost.Mapper.WorldToCell(hit.point);
-            if (!_runtimeHost.Mapper.IsInside(cell))
-                return false;
-
-            return true;
+            return _resolver.TryResolveFromScreen(_camera, pointer, out cell, out _);
         }
 
         private static bool WasPressedThisFrame(KeyCode key)
