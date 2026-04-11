@@ -55,9 +55,9 @@
 - [x] Click build works
 
 ### Validation
-- [ ] Footprint correct
-- [ ] Road adjacency correct
-- [ ] Driveway correct
+- [x] Footprint correct
+- [x] Road adjacency correct
+- [x] Driveway correct
 
 ---
 
@@ -121,6 +121,7 @@
 - T03 completed by introducing `GroundRaycastService` and `WorldToCellResolver3D`, then wiring `WorldSelectionController3D` to use them.
 - T05 completed as a minimal 3D scene setup pass with runtime terrain/collider safety wiring.
 - T06 completed by adding hover debug overlay and mapping verification helpers.
+- Phase 2 validation helpers now expose footprint, driveway, and adjacent-road state for in-scene verification.
 - Compile-clean status and mapping offset accuracy still need explicit runtime/editor verification.
 
 ---
