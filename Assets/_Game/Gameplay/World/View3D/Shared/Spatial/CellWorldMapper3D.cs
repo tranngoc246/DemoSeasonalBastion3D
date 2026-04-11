@@ -1,5 +1,4 @@
 using SeasonalBastion.Contracts;
-using SeasonalBastion.WorldGen.Authoring.ScriptableObjects;
 using SeasonalBastion.WorldGen.Runtime.Models;
 using UnityEngine;
 
@@ -7,40 +6,79 @@ namespace SeasonalBastion
 {
     public sealed class CellWorldMapper3D
     {
-        private readonly WorldMeshSettings _meshSettings;
+        private readonly GridWorldSettings _settings;
         private readonly WorldGenerationResult _world;
-        private readonly Vector3 _origin;
         private readonly Vector3 _gridOriginOffset;
 
-        public CellWorldMapper3D(WorldMeshSettings meshSettings, WorldGenerationResult world, Vector3 origin)
+        public CellWorldMapper3D(GridWorldSettings settings, WorldGenerationResult world)
         {
-            _meshSettings = meshSettings;
+            _settings = settings ?? new GridWorldSettings(1f, Vector3.zero);
             _world = world;
-            _origin = origin;
 
             float cellSize = CellSize;
-            float halfWidth = ((_world?.Width ?? 0) - 1) * 0.5f * cellSize;
-            float halfHeight = ((_world?.Height ?? 0) - 1) * 0.5f * cellSize;
+            float halfWidth = ((Width - 1) * 0.5f) * cellSize;
+            float halfHeight = ((Height - 1) * 0.5f) * cellSize;
             _gridOriginOffset = new Vector3(-halfWidth, 0f, halfHeight);
         }
 
-        public float CellSize => _meshSettings != null ? _meshSettings.meshScale : 1f;
+        public float CellSize => _settings.CellSize;
         public int Width => _world?.Width ?? 0;
         public int Height => _world?.Height ?? 0;
+        public Vector3 Origin => _settings.Origin;
 
         public Vector3 CellToWorldCenter(CellPos cell)
         {
-            float x = _origin.x + _gridOriginOffset.x + cell.X * CellSize;
-            float z = _origin.z + _gridOriginOffset.z - cell.Y * CellSize;
-            float y = _origin.y + GetHeightAtCell(cell);
-            return new Vector3(x, y, z);
+            Vector3 corner = CellToWorldCorner(cell);
+            float y = Origin.y + GetHeightAtCell(cell);
+            return new Vector3(
+                corner.x + CellSize * 0.5f,
+                y,
+                corner.z + GetGridYWorldZSign() * (CellSize * 0.5f));
+        }
+
+        public Vector3 CellToWorldCorner(CellPos cell)
+        {
+            float x = Origin.x + _gridOriginOffset.x + cell.X * CellSize;
+            float z = Origin.z + _gridOriginOffset.z + cell.Y * CellSize * GetGridYWorldZSign();
+            return new Vector3(x, Origin.y, z);
+        }
+
+        public Bounds GetFootprintWorldBounds(CellPos anchor, int sizeX, int sizeY)
+        {
+            int clampedSizeX = Mathf.Max(1, sizeX);
+            int clampedSizeY = Mathf.Max(1, sizeY);
+
+            Vector3 minCorner = CellToWorldCorner(anchor);
+            Vector3 maxCorner = CellToWorldCorner(new CellPos(anchor.X + clampedSizeX, anchor.Y + clampedSizeY));
+
+            float minX = Mathf.Min(minCorner.x, maxCorner.x);
+            float maxX = Mathf.Max(minCorner.x, maxCorner.x);
+            float minZ = Mathf.Min(minCorner.z, maxCorner.z);
+            float maxZ = Mathf.Max(minCorner.z, maxCorner.z);
+
+            float avgHeight = Origin.y + GetAverageHeightForFootprint(anchor, clampedSizeX, clampedSizeY);
+            Vector3 center = new Vector3((minX + maxX) * 0.5f, avgHeight, (minZ + maxZ) * 0.5f);
+            Vector3 size = new Vector3(Mathf.Abs(maxX - minX), 0f, Mathf.Abs(maxZ - minZ));
+            return new Bounds(center, size);
+        }
+
+        public bool TryWorldToCell(Vector3 world, out CellPos cell)
+        {
+            float localX = (world.x - Origin.x - _gridOriginOffset.x) / CellSize;
+            float localY = ((world.z - Origin.z - _gridOriginOffset.z) / GetGridYWorldZSign()) / CellSize;
+
+            cell = new CellPos(Mathf.FloorToInt(localX), Mathf.FloorToInt(localY));
+            return IsInside(cell);
         }
 
         public CellPos WorldToCell(Vector3 world)
         {
-            float localX = (world.x - _origin.x - _gridOriginOffset.x) / CellSize;
-            float localY = (_origin.z + _gridOriginOffset.z - world.z) / CellSize;
-            return new CellPos(Mathf.RoundToInt(localX), Mathf.RoundToInt(localY));
+            if (TryWorldToCell(world, out var cell))
+                return cell;
+
+            float localX = (world.x - Origin.x - _gridOriginOffset.x) / CellSize;
+            float localY = ((world.z - Origin.z - _gridOriginOffset.z) / GetGridYWorldZSign()) / CellSize;
+            return new CellPos(Mathf.FloorToInt(localX), Mathf.FloorToInt(localY));
         }
 
         public float GetHeightAtCell(CellPos cell)
@@ -80,15 +118,17 @@ namespace SeasonalBastion
 
         public Vector3 FootprintToWorldCenter(CellPos anchor, int sizeX, int sizeY)
         {
-            float avgHeight = GetAverageHeightForFootprint(anchor, sizeX, sizeY);
-            float x = _origin.x + _gridOriginOffset.x + ((anchor.X + (sizeX - 1) * 0.5f) * CellSize);
-            float z = _origin.z + _gridOriginOffset.z - ((anchor.Y + (sizeY - 1) * 0.5f) * CellSize);
-            return new Vector3(x, _origin.y + avgHeight, z);
+            return GetFootprintWorldBounds(anchor, sizeX, sizeY).center;
         }
 
         public bool IsInside(CellPos cell)
         {
             return cell.X >= 0 && cell.Y >= 0 && cell.X < Width && cell.Y < Height;
+        }
+
+        private float GetGridYWorldZSign()
+        {
+            return _settings.InvertGridYOnWorldZ ? -1f : 1f;
         }
     }
 }

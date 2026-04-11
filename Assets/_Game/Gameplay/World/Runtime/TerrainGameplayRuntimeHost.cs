@@ -31,6 +31,7 @@ namespace SeasonalBastion
 
         public WorldGenerationResult GeneratedWorld { get; private set; }
         public GridMap GridMap { get; private set; }
+        public GridWorldSettings GridWorldSettings { get; private set; }
         public CellWorldMapper3D Mapper { get; private set; }
         public TerrainGameplayBridge Bridge { get; private set; }
 
@@ -57,7 +58,8 @@ namespace SeasonalBastion
             }
 
             GridMap = new GridMap(GeneratedWorld.Width, GeneratedWorld.Height);
-            Mapper = new CellWorldMapper3D(_meshSettings, GeneratedWorld, _worldOrigin);
+            GridWorldSettings = new GridWorldSettings(_meshSettings.meshScale, _worldOrigin, invertGridYOnWorldZ: true);
+            Mapper = new CellWorldMapper3D(GridWorldSettings, GeneratedWorld);
             Bridge = new TerrainGameplayBridge(GeneratedWorld, GridMap);
             Bridge.ApplyEmptyGameplayGridFromTerrain();
             BuildRuntimeTerrainMesh();
