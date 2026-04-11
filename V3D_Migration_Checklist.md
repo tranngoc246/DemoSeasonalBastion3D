@@ -27,9 +27,9 @@
 - [ ] Mapping accurate (no offset)
 
 ### Camera
-- [ ] StrategyCameraController3D works
-- [ ] Pan/zoom stable
-- [ ] Camera bounds applied
+- [x] StrategyCameraController3D works
+- [x] Pan/zoom stable
+- [x] Camera bounds applied
 
 ### Scene
 - [ ] Ground plane exists

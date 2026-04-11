@@ -110,16 +110,12 @@ namespace SeasonalBastion
                 return;
 
             if (_snapToTerrainCenterOnStart)
-            {
-                int centerX = Mathf.Max(0, _runtimeHost.GridMap.Width / 2);
-                int centerY = Mathf.Max(0, _runtimeHost.GridMap.Height / 2);
-                CellPos centerCell = new(centerX, centerY);
-                _focusPoint = _runtimeHost.Mapper.CellToWorldCenter(centerCell);
-            }
+                _focusPoint = GetMapWorldBounds().center;
 
             if (_fitToMapOnStart)
             {
-                float mapSpan = Mathf.Max(_runtimeHost.GridMap.Width, _runtimeHost.GridMap.Height) * _runtimeHost.Mapper.CellSize;
+                Bounds mapBounds = GetMapWorldBounds();
+                float mapSpan = Mathf.Max(mapBounds.size.x, mapBounds.size.z);
                 float fitted = Mathf.Clamp(mapSpan * 0.55f, _minDistance, _maxDistance);
                 _defaultDistance = fitted;
             }
@@ -268,15 +264,30 @@ namespace SeasonalBastion
             if (_runtimeHost?.Mapper == null || _runtimeHost.GridMap == null)
                 return;
 
-            float minX = _boundsPadding;
-            float minZ = _boundsPadding;
-            float maxX = Mathf.Max(minX, _runtimeHost.GridMap.Width * _runtimeHost.Mapper.CellSize - _boundsPadding);
-            float maxZ = Mathf.Max(minZ, _runtimeHost.GridMap.Height * _runtimeHost.Mapper.CellSize - _boundsPadding);
+            Bounds mapBounds = GetMapWorldBounds();
+            float minX = mapBounds.min.x + _boundsPadding;
+            float maxX = mapBounds.max.x - _boundsPadding;
+            float minZ = mapBounds.min.z + _boundsPadding;
+            float maxZ = mapBounds.max.z - _boundsPadding;
+
+            if (minX > maxX)
+            {
+                float centerX = mapBounds.center.x;
+                minX = centerX;
+                maxX = centerX;
+            }
+
+            if (minZ > maxZ)
+            {
+                float centerZ = mapBounds.center.z;
+                minZ = centerZ;
+                maxZ = centerZ;
+            }
+
             _focusPoint.x = Mathf.Clamp(_focusPoint.x, minX, maxX);
             _focusPoint.z = Mathf.Clamp(_focusPoint.z, minZ, maxZ);
 
-            CellPos focusCell = _runtimeHost.Mapper.WorldToCell(_focusPoint);
-            if (_runtimeHost.Mapper.IsInside(focusCell))
+            if (_runtimeHost.Mapper.TryWorldToCell(_focusPoint, out var focusCell))
                 _focusPoint.y = _runtimeHost.Mapper.GetHeightAtCell(focusCell);
         }
 
@@ -285,10 +296,7 @@ namespace SeasonalBastion
             if (_runtimeHost?.GridMap == null || _runtimeHost.Mapper == null)
                 return;
 
-            int centerX = Mathf.Max(0, _runtimeHost.GridMap.Width / 2);
-            int centerY = Mathf.Max(0, _runtimeHost.GridMap.Height / 2);
-            CellPos centerCell = new(centerX, centerY);
-            _focusPoint = _runtimeHost.Mapper.CellToWorldCenter(centerCell);
+            _focusPoint = GetMapWorldBounds().center;
             _targetDistance = Mathf.Clamp(_defaultDistance, _minDistance, _maxDistance);
             _distance = _targetDistance;
             _targetYaw = _defaultYaw;
@@ -314,7 +322,8 @@ namespace SeasonalBastion
                 return;
             }
 
-            _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetPosition, 1f - Mathf.Exp(-12f * Time.deltaTime));
+            float followSmooth = 12f;
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetPosition, 1f - Mathf.Exp(-followSmooth * Time.deltaTime));
             _camera.transform.rotation = rotation;
         }
 
@@ -353,6 +362,17 @@ namespace SeasonalBastion
                 KeyCode.RightShift => Keyboard.current.rightShiftKey.isPressed,
                 _ => false,
             };
+        }
+
+        private Bounds GetMapWorldBounds()
+        {
+            if (_runtimeHost?.Mapper == null || _runtimeHost.GridMap == null)
+                return new Bounds(Vector3.zero, Vector3.zero);
+
+            return _runtimeHost.Mapper.GetFootprintWorldBounds(
+                new CellPos(0, 0),
+                _runtimeHost.GridMap.Width,
+                _runtimeHost.GridMap.Height);
         }
 
         private static bool WasPressedThisFrame(KeyCode key)
