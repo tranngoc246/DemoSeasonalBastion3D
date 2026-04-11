@@ -5,25 +5,25 @@
 ## PHASE 0 — BASELINE
 
 - [ ] Project compiles without errors
-- [ ] Core systems identified:
-  - [ ] GridMap
-  - [ ] PlacementService
-  - [ ] WorldState
-  - [ ] RunStartFacade
-  - [ ] BuildOrderService
-- [ ] Main gameplay scene confirmed
-- [ ] Grid orientation defined (XZ or XY)
-- [ ] Cell size documented
-- [ ] Baseline doc created
+- [x] Core systems identified:
+  - [x] GridMap
+  - [x] PlacementService
+  - [x] WorldState
+  - [x] RunStartFacade
+  - [x] BuildOrderService
+- [x] Main gameplay scene confirmed
+- [x] Grid orientation defined (XZ or XY)
+- [x] Cell size documented
+- [x] Baseline doc created
 
 ---
 
 ## PHASE 1 — FOUNDATION 3D
 
 ### Spatial
-- [ ] GridWorldSettings created
-- [ ] CellWorldMapper3D working
-- [ ] WorldToCellResolver3D working
+- [x] GridWorldSettings created
+- [x] CellWorldMapper3D working
+- [x] WorldToCellResolver3D working
 - [ ] Mapping accurate (no offset)
 
 ### Camera
@@ -34,7 +34,7 @@
 ### Scene
 - [ ] Ground plane exists
 - [ ] Ground layer configured
-- [ ] Raycast works
+- [x] Raycast works
 
 ### Debug
 - [ ] Hover cell debug visible
@@ -106,6 +106,16 @@
 ### UI
 - [ ] Selection updates info panel
 - [ ] No UI click-through issues
+
+---
+
+## Progress Notes
+
+- Phase 0 baseline audited and documented in `Docs/V3D_Migration_Baseline.md`.
+- T01 completed by creating and organizing the `View3D` folder shell.
+- T02 completed as a minimal refactor by introducing `GridWorldSettings` and normalizing `CellWorldMapper3D`.
+- T03 completed by introducing `GroundRaycastService` and `WorldToCellResolver3D`, then wiring `WorldSelectionController3D` to use them.
+- Compile-clean status and mapping offset accuracy still need explicit runtime/editor verification.
 
 ### Camera
 - [ ] Focus works on selection
