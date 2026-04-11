@@ -107,6 +107,10 @@
 - [ ] Selection updates info panel
 - [ ] No UI click-through issues
 
+### Camera Followups
+- [ ] Focus works on selection
+- [ ] Focus works from notifications
+
 ---
 
 ## Progress Notes
@@ -115,11 +119,9 @@
 - T01 completed by creating and organizing the `View3D` folder shell.
 - T02 completed as a minimal refactor by introducing `GridWorldSettings` and normalizing `CellWorldMapper3D`.
 - T03 completed by introducing `GroundRaycastService` and `WorldToCellResolver3D`, then wiring `WorldSelectionController3D` to use them.
+- T05 completed as a minimal 3D scene setup pass with runtime terrain/collider safety wiring.
+- T06 completed by adding hover debug overlay and mapping verification helpers.
 - Compile-clean status and mapping offset accuracy still need explicit runtime/editor verification.
-
-### Camera
-- [ ] Focus works on selection
-- [ ] Focus works from notifications
 
 ---
 

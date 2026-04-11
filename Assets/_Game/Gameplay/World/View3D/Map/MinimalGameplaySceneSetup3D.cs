@@ -8,6 +8,7 @@ namespace SeasonalBastion
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private GameplaySceneInstaller3D _installer;
         [SerializeField] private string _expectedGroundObjectName = "TerrainRuntime";
+        [SerializeField] private string _groundLayerName = "Ground";
 
         private void Awake()
         {
@@ -41,6 +42,10 @@ namespace SeasonalBastion
 
             if (!string.IsNullOrEmpty(_expectedGroundObjectName))
                 _terrainHost.gameObject.name = _expectedGroundObjectName;
+
+            int namedLayer = LayerMask.NameToLayer(_groundLayerName);
+            if (namedLayer >= 0)
+                _terrainHost.gameObject.layer = namedLayer;
 
             MeshCollider collider = _terrainHost.GetComponent<MeshCollider>();
             if (collider == null)

@@ -9,7 +9,8 @@ namespace SeasonalBastion
         [SerializeField] private Camera _camera;
         [SerializeField] private TerrainGameplayRuntimeHost _runtimeHost;
         [SerializeField] private GameplayRuntimeBootstrap _gameplayBootstrap;
-        [SerializeField] private LayerMask _groundMask = ~0;
+        [SerializeField] private LayerMask _groundMask = 0;
+        [SerializeField] private string _groundLayerName = "Ground";
         [SerializeField] private float _rayDistance = 5000f;
         [SerializeField] private KeyCode _selectKey = KeyCode.Mouse0;
 
@@ -45,9 +46,26 @@ namespace SeasonalBastion
 
             if (_runtimeHost != null && _runtimeHost.Mapper != null)
             {
-                _groundRaycast ??= new GroundRaycastService(_groundMask, _rayDistance);
+                LayerMask resolvedGroundMask = ResolveGroundMask();
+                _groundRaycast ??= new GroundRaycastService(resolvedGroundMask, _rayDistance);
                 _resolver ??= new WorldToCellResolver3D(_groundRaycast, _runtimeHost.Mapper);
             }
+        }
+
+        private LayerMask ResolveGroundMask()
+        {
+            if (_groundMask.value != 0)
+                return _groundMask;
+
+            int namedLayer = LayerMask.NameToLayer(_groundLayerName);
+            if (namedLayer >= 0)
+            {
+                _groundMask = 1 << namedLayer;
+                return _groundMask;
+            }
+
+            _groundMask = ~0;
+            return _groundMask;
         }
 
         private void UpdateHover()

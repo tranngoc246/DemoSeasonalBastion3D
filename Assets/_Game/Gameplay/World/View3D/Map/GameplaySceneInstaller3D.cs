@@ -10,6 +10,7 @@ namespace SeasonalBastion
         [SerializeField] private WorldViewRoot3D _worldView;
         [SerializeField] private WorldSelectionController3D _selection;
         [SerializeField] private CellHighlightView3D _highlight;
+        [SerializeField] private HoverCellDebug3D _hoverDebug;
         [SerializeField] private PlacementPreviewController3D _preview;
         [SerializeField] private PlacementHudView3D _hud;
         [SerializeField] private SelectionInspectHudView3D _inspectHud;
@@ -35,6 +36,8 @@ namespace SeasonalBastion
                 _selection = FindFirstObjectByType<WorldSelectionController3D>();
             if (_highlight == null)
                 _highlight = FindFirstObjectByType<CellHighlightView3D>();
+            if (_hoverDebug == null)
+                _hoverDebug = FindFirstObjectByType<HoverCellDebug3D>();
             if (_preview == null)
                 _preview = FindFirstObjectByType<PlacementPreviewController3D>();
             if (_hud == null)
@@ -73,6 +76,12 @@ namespace SeasonalBastion
             {
                 SetObjectField(_highlight, "_runtimeHost", _terrainHost);
                 SetObjectField(_highlight, "_selection", _selection);
+            }
+
+            if (_hoverDebug != null)
+            {
+                SetObjectField(_hoverDebug, "_runtimeHost", _terrainHost);
+                SetObjectField(_hoverDebug, "_selection", _selection);
             }
 
             if (_preview != null)
