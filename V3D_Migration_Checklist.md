@@ -44,15 +44,15 @@
 
 ## PHASE 2 — PLACEMENT 3D
 
-- [ ] PlacementPreviewController3D created
-- [ ] PlacementGhostView3D working
-- [ ] FootprintOverlay3D correct
-- [ ] Driveway marker visible
+- [x] PlacementPreviewController3D created
+- [x] PlacementGhostView3D working
+- [x] FootprintOverlay3D correct
+- [x] Driveway marker visible
 
 ### Integration
-- [ ] Uses PlacementService (no duplicate logic)
-- [ ] Valid/invalid preview correct
-- [ ] Click build works
+- [x] Uses PlacementService (no duplicate logic)
+- [x] Valid/invalid preview correct
+- [x] Click build works
 
 ### Validation
 - [ ] Footprint correct

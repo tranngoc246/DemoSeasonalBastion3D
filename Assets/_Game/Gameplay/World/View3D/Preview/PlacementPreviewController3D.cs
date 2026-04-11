@@ -17,11 +17,8 @@ namespace SeasonalBastion
         [SerializeField] private KeyCode _rotateKey = KeyCode.R;
         [SerializeField] private KeyCode _confirmKey = KeyCode.Mouse1;
         [SerializeField] private bool _placementMode = true;
-        [SerializeField] private Color _validColor = new(0.2f, 1f, 0.35f, 0.45f);
-        [SerializeField] private Color _invalidColor = new(1f, 0.25f, 0.25f, 0.45f);
-        [SerializeField] private Color _entryRoadColor = new(1f, 0.9f, 0.15f, 0.55f);
-        [SerializeField] private float _heightOffset = 0.12f;
-        [SerializeField] private float _cellFill = 0.9f;
+        [SerializeField] private PlacementGhostView3D _ghostView;
+        [SerializeField] private FootprintOverlay3D _footprintOverlay;
         [SerializeField] private bool _showDebugPlacementLabel = true;
         [SerializeField] private Vector2 _debugLabelScreenOffset = new(16f, 16f);
 
@@ -89,6 +86,10 @@ namespace SeasonalBastion
                 _selection = FindObjectOfType<WorldSelectionController3D>();
             if (_worldView == null)
                 _worldView = FindObjectOfType<WorldViewRoot3D>();
+            if (_ghostView == null)
+                _ghostView = GetComponent<PlacementGhostView3D>();
+            if (_footprintOverlay == null)
+                _footprintOverlay = GetComponent<FootprintOverlay3D>();
         }
 
         private void HandleInput()
@@ -144,7 +145,7 @@ namespace SeasonalBastion
                     GameObject marker = _footprintMarkers[markerIndex++];
                     bool inside = _runtimeHost.Mapper.IsInside(cell);
                     marker.SetActive(true);
-                    PlaceCellMarker(marker.transform, cell, inside ? (_lastResult.Ok ? _validColor : _invalidColor) : _invalidColor);
+                    _ghostView?.PlaceCellMarker(marker, _runtimeHost.Mapper, cell, inside && _lastResult.Ok);
                 }
             }
 
@@ -155,7 +156,7 @@ namespace SeasonalBastion
             bool showEntry = _runtimeHost.Mapper.IsInside(_lastResult.SuggestedRoadCell);
             _entryMarker.SetActive(showEntry);
             if (showEntry)
-                PlaceCellMarker(_entryMarker.transform, _lastResult.SuggestedRoadCell, _entryRoadColor);
+                _footprintOverlay?.PlaceEntryMarker(_entryMarker, _runtimeHost.Mapper, _lastResult.SuggestedRoadCell);
         }
 
         private void TryCommitPlacement()
@@ -184,7 +185,7 @@ namespace SeasonalBastion
         private void EnsureFootprintMarkers(int count)
         {
             while (_footprintMarkers.Count < count)
-                _footprintMarkers.Add(CreateMarker($"PlacementMarker_{_footprintMarkers.Count}"));
+                _footprintMarkers.Add(_ghostView != null ? _ghostView.CreateMarker(transform, $"PlacementMarker_{_footprintMarkers.Count}") : CreateFallbackMarker($"PlacementMarker_{_footprintMarkers.Count}"));
         }
 
         private void EnsureEntryMarker()
@@ -192,10 +193,10 @@ namespace SeasonalBastion
             if (_entryMarker != null)
                 return;
 
-            _entryMarker = CreateMarker("PlacementEntryMarker");
+            _entryMarker = _footprintOverlay != null ? _footprintOverlay.CreateEntryMarker(transform, "PlacementEntryMarker") : CreateFallbackMarker("PlacementEntryMarker");
         }
 
-        private GameObject CreateMarker(string name)
+        private GameObject CreateFallbackMarker(string name)
         {
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name;
@@ -211,18 +212,6 @@ namespace SeasonalBastion
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
             return go;
-        }
-
-        private void PlaceCellMarker(Transform marker, CellPos cell, Color color)
-        {
-            Vector3 pos = _runtimeHost.Mapper.CellToWorldCenter(cell);
-            float cellSize = _runtimeHost.Mapper.CellSize * _cellFill;
-            marker.position = pos + Vector3.up * _heightOffset;
-            marker.localScale = new Vector3(cellSize, 0.03f, cellSize);
-
-            Renderer renderer = marker.GetComponent<Renderer>();
-            if (renderer != null)
-                renderer.sharedMaterial.color = color;
         }
 
         private void HideAll()
