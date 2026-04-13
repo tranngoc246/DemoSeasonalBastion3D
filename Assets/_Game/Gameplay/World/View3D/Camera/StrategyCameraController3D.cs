@@ -307,6 +307,13 @@ namespace SeasonalBastion
             ApplyCamera(immediate);
         }
 
+        public bool TrySetFocusPoint(Vector3 worldPoint)
+        {
+            _focusPoint = worldPoint;
+            ClampFocusPoint();
+            return true;
+        }
+
         private void ApplyCamera(bool immediate)
         {
             if (_camera == null)

@@ -110,6 +110,7 @@
 - [ ] No UI click-through issues
 
 ### Camera Followups
+- [x] Focus controller exists
 - [ ] Focus works on selection
 - [ ] Focus works from notifications
 
@@ -129,7 +130,8 @@
 - Building/build-site lifecycle sync was stabilized to reduce duplicate views and support construction-to-complete transitions without requiring real 3D assets.
 - Phase 5 selection now supports placeholder world-object picking for buildings and build sites via `SelectedEntityBridge3D` and `SelectionHighlight3D`, with debug inspect HUD integration.
 - Phase 4 now has minimal presenter-driven NPC/enemy world movement in 3D via `NpcMovementPresenter3D` and `EnemyMovementPresenter3D`, keeping gameplay movement logic untouched.
-- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, and movement smoothness.
+- Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
+- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, and camera focus behavior.
 
 ---
 

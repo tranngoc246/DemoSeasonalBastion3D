@@ -955,6 +955,7 @@ MonoBehaviour:
   _inspectHud: {fileID: 0}
   _selectionActions: {fileID: 0}
   _strategyCamera: {fileID: 1504267215}
+  _cameraFocus: {fileID: 0}
 --- !u!4 &2012752004
 Transform:
   m_ObjectHideFlags: 0

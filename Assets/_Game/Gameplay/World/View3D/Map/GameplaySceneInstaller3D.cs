@@ -16,6 +16,7 @@ namespace SeasonalBastion
         [SerializeField] private SelectionInspectHudView3D _inspectHud;
         [SerializeField] private SelectionActionDebug3D _selectionActions;
         [SerializeField] private StrategyCameraController3D _strategyCamera;
+        [SerializeField] private CameraFocusController3D _cameraFocus;
 
         private void Awake()
         {
@@ -49,6 +50,8 @@ namespace SeasonalBastion
                 _selectionActions = FindFirstObjectByType<SelectionActionDebug3D>();
             if (_strategyCamera == null)
                 _strategyCamera = FindFirstObjectByType<StrategyCameraController3D>();
+            if (_cameraFocus == null)
+                _cameraFocus = FindFirstObjectByType<CameraFocusController3D>();
 
             if (_strategyCamera != null)
             {
@@ -109,6 +112,14 @@ namespace SeasonalBastion
             {
                 SetObjectField(_selectionActions, "_bootstrap", _bootstrap);
                 SetObjectField(_selectionActions, "_selection", _selection);
+            }
+
+            if (_cameraFocus != null)
+            {
+                SetObjectField(_cameraFocus, "_strategyCamera", _strategyCamera);
+                SetObjectField(_cameraFocus, "_runtimeHost", _terrainHost);
+                SetObjectField(_cameraFocus, "_bootstrap", _bootstrap);
+                SetObjectField(_cameraFocus, "_selection", _selection);
             }
         }
 
