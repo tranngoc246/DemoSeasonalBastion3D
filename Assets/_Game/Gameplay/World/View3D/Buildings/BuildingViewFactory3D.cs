@@ -31,13 +31,19 @@ namespace SeasonalBastion
 
         public void SyncBuildSites(WorldState world, DataRegistry data, Transform root, Dictionary<int, BuildingView3D> views)
         {
+            if (world == null || root == null || views == null)
+                return;
+
             HashSet<int> alive = new();
             foreach (var id in world.Sites.Ids)
             {
+                if (!world.Sites.Exists(id))
+                    continue;
+
                 int key = id.Value;
                 alive.Add(key);
                 BuildSiteState state = world.Sites.Get(id);
-                data.TryGetBuilding(state.BuildingDefId, out var def);
+                data?.TryGetBuilding(state.BuildingDefId, out var def);
 
                 BuildingView3D view = GetOrCreateView(views, key, root, def, true);
                 view.BindBuildSite(key, _mapper, def, state, _buildSiteVisualOffset, _buildSiteScale);
@@ -48,16 +54,22 @@ namespace SeasonalBastion
 
         public void SyncBuildings(WorldState world, DataRegistry data, Transform root, Dictionary<int, BuildingView3D> views)
         {
+            if (world == null || root == null || views == null)
+                return;
+
             HashSet<int> alive = new();
             foreach (var id in world.Buildings.Ids)
             {
+                if (!world.Buildings.Exists(id))
+                    continue;
+
                 int key = id.Value;
                 BuildingState state = world.Buildings.Get(id);
                 if (!state.IsConstructed)
                     continue;
 
                 alive.Add(key);
-                data.TryGetBuilding(state.DefId, out var def);
+                data?.TryGetBuilding(state.DefId, out var def);
                 BuildingView3D view = GetOrCreateView(views, key, root, def, false);
                 view.BindBuilding(key, _mapper, def, state, _buildingVisualOffset, _buildingScale);
             }

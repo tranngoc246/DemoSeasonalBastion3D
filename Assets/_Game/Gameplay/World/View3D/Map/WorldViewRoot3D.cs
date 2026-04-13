@@ -93,6 +93,9 @@ namespace SeasonalBastion
             if (_runtimeHost?.Mapper == null)
                 return;
 
+            if (_buildingViewFactory != null)
+                return;
+
             Vector3 buildingScale = _prefabCatalog != null ? _prefabCatalog.buildingScale : Vector3.one;
             Vector3 buildSiteScale = new(0.75f, 0.2f, 0.75f);
             _buildingViewFactory = new BuildingViewFactory3D(
