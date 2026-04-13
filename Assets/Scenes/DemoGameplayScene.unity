@@ -307,6 +307,7 @@ MonoBehaviour:
   _selectedColor: {r: 1, g: 0.92, b: 0.2, a: 0.5}
   _heightOffset: 0.1
   _sizeFactor: 0.9
+  _hideSelectedCellForWorldObject: 1
 --- !u!4 &32189897
 Transform:
   m_ObjectHideFlags: 0
@@ -952,6 +953,7 @@ MonoBehaviour:
   _preview: {fileID: 1611475961}
   _hud: {fileID: 0}
   _inspectHud: {fileID: 0}
+  _selectionActions: {fileID: 0}
   _strategyCamera: {fileID: 1504267215}
 --- !u!4 &2012752004
 Transform:
