@@ -84,6 +84,9 @@ namespace SeasonalBastion
             if (!WasPressedThisFrame(_selectKey))
                 return;
 
+            if (TrySelectWorldEntity())
+                return;
+
             if (!HasHoveredCell)
             {
                 HasSelectedCell = false;
@@ -102,6 +105,44 @@ namespace SeasonalBastion
                 if (occ.Kind == CellOccupancyKind.Building)
                     SelectedBuilding = occ.Building;
             }
+        }
+
+        private bool TrySelectWorldEntity()
+        {
+            if (_camera == null)
+                return false;
+
+            Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+            Ray ray = _camera.ScreenPointToRay(pointer);
+            if (!Physics.Raycast(ray, out var hit, _rayDistance, ~0, QueryTriggerInteraction.Ignore))
+                return false;
+
+            SelectedEntityBridge3D bridge = hit.collider != null
+                ? hit.collider.GetComponentInParent<SelectedEntityBridge3D>()
+                : null;
+            if (bridge == null)
+                return false;
+
+            HasSelectedCell = false;
+            SelectedCell = default;
+            SelectedBuilding = default;
+
+            if (bridge.IsBuildSite)
+                return true;
+
+            if (bridge.BuildingId.Value != 0)
+            {
+                SelectedBuilding = bridge.BuildingId;
+                if (_gameplayBootstrap?.World != null && _gameplayBootstrap.World.Buildings.Exists(bridge.BuildingId))
+                {
+                    BuildingState state = _gameplayBootstrap.World.Buildings.Get(bridge.BuildingId);
+                    SelectedCell = state.Anchor;
+                    HasSelectedCell = true;
+                }
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryRaycastCell(out CellPos cell)

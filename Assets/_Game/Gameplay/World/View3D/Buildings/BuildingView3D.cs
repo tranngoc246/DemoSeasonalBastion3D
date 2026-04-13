@@ -3,10 +3,13 @@ using UnityEngine;
 
 namespace SeasonalBastion
 {
+    [RequireComponent(typeof(SelectedEntityBridge3D))]
+
     public sealed class BuildingView3D : MonoBehaviour
     {
         [SerializeField] private Renderer _renderer;
         [SerializeField] private ConstructionVisualController3D _constructionVisual;
+        [SerializeField] private SelectedEntityBridge3D _selectionBridge;
 
         public int RuntimeId { get; private set; }
         public bool IsBuildSite { get; private set; }
@@ -15,6 +18,7 @@ namespace SeasonalBastion
         {
             RuntimeId = runtimeId;
             IsBuildSite = false;
+            ResolveSelectionBridge()?.BindBuilding(state.Id);
             ApplyCommon(mapper, def, state.Anchor, state.Rotation, visualOffset, baseScale, false, state.IsConstructed);
             gameObject.name = $"B_{runtimeId}_{state.DefId}";
         }
@@ -23,6 +27,7 @@ namespace SeasonalBastion
         {
             RuntimeId = runtimeId;
             IsBuildSite = true;
+            ResolveSelectionBridge()?.BindSite(state.Id);
             ApplyCommon(mapper, def, state.Anchor, state.Rotation, visualOffset, baseScale, true, false);
             gameObject.name = $"S_{runtimeId}_{state.BuildingDefId}";
         }
@@ -52,6 +57,13 @@ namespace SeasonalBastion
             if (_renderer == null)
                 _renderer = GetComponentInChildren<Renderer>();
             return _renderer;
+        }
+
+        private SelectedEntityBridge3D ResolveSelectionBridge()
+        {
+            if (_selectionBridge == null)
+                _selectionBridge = GetComponent<SelectedEntityBridge3D>();
+            return _selectionBridge;
         }
 
         private static void GetFootprintSize(BuildingDef def, Dir4 rotation, out int width, out int height)
