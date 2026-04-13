@@ -43,7 +43,9 @@ namespace SeasonalBastion
                 int key = id.Value;
                 alive.Add(key);
                 BuildSiteState state = world.Sites.Get(id);
-                data?.TryGetBuilding(state.BuildingDefId, out var def);
+                BuildingDef def = null;
+                if (data != null)
+                    data.TryGetBuilding(state.BuildingDefId, out def);
 
                 BuildingView3D view = GetOrCreateView(views, key, root, def, true);
                 view.BindBuildSite(key, _mapper, def, state, _buildSiteVisualOffset, _buildSiteScale);
@@ -69,7 +71,9 @@ namespace SeasonalBastion
                     continue;
 
                 alive.Add(key);
-                data?.TryGetBuilding(state.DefId, out var def);
+                BuildingDef def = null;
+                if (data != null)
+                    data.TryGetBuilding(state.DefId, out def);
                 BuildingView3D view = GetOrCreateView(views, key, root, def, false);
                 view.BindBuilding(key, _mapper, def, state, _buildingVisualOffset, _buildingScale);
             }
