@@ -9,7 +9,7 @@ namespace SeasonalBastion
         [SerializeField] private float _rotationSmooth = 18f;
         [SerializeField] private float _minLookSqrMagnitude = 0.0001f;
 
-        public void Present(CellWorldMapper3D mapper, RunStartRuntime runtime, EnemyState state, Vector3 visualOffset)
+        public void Present(CellWorldMapper3D mapper, RunStartRuntime runStart, EnemyState state, Vector3 visualOffset)
         {
             if (mapper == null)
                 return;
@@ -17,7 +17,7 @@ namespace SeasonalBastion
             Vector3 targetPosition = mapper.CellToWorldCenter(state.Cell) + visualOffset;
             Vector3 motion = Vector3.zero;
 
-            if (runtime != null && runtime.Lanes != null && runtime.Lanes.TryGetValue(state.Lane, out var lane))
+            if (runStart != null && runStart.Lanes != null && runStart.Lanes.TryGetValue(state.Lane, out var lane))
             {
                 Vector3 laneStep = DirToWorld(lane.DirToHQ, mapper.CellSize);
                 float progress = Mathf.Clamp01(state.MoveProgress01);
@@ -51,10 +51,10 @@ namespace SeasonalBastion
         {
             return dir switch
             {
-                Dir4.Up => new Vector3(0f, 0f, cellSize),
-                Dir4.Right => new Vector3(cellSize, 0f, 0f),
-                Dir4.Down => new Vector3(0f, 0f, -cellSize),
-                Dir4.Left => new Vector3(-cellSize, 0f, 0f),
+                Dir4.N => new Vector3(0f, 0f, cellSize),
+                Dir4.E => new Vector3(cellSize, 0f, 0f),
+                Dir4.S => new Vector3(0f, 0f, -cellSize),
+                Dir4.W => new Vector3(-cellSize, 0f, 0f),
                 _ => Vector3.zero,
             };
         }

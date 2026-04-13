@@ -163,7 +163,7 @@ namespace SeasonalBastion
                 EnemyMovementPresenter3D presenter = view.GetComponent<EnemyMovementPresenter3D>();
                 if (presenter == null)
                     presenter = view.AddComponent<EnemyMovementPresenter3D>();
-                presenter.Present(_runtimeHost.Mapper, _gameplayBootstrap != null ? _gameplayBootstrap.Runtime : null, state, _actorVisualOffset);
+                presenter.Present(_runtimeHost.Mapper, _gameplayBootstrap != null ? _gameplayBootstrap.RunStart : null, state, _actorVisualOffset);
             }
 
             RemoveStale(_enemyViews, alive);
