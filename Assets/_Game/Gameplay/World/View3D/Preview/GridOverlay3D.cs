@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SeasonalBastion.Contracts;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SeasonalBastion
 {
@@ -50,13 +51,13 @@ namespace SeasonalBastion
 
         private void HandleInput()
         {
-            if (Input.GetKeyDown(_toggleGridKey))
+            if (WasPressedThisFrame(_toggleGridKey))
                 _showGrid = !_showGrid;
-            if (Input.GetKeyDown(_toggleBlockedKey))
+            if (WasPressedThisFrame(_toggleBlockedKey))
                 _showBlocked = !_showBlocked;
-            if (Input.GetKeyDown(_toggleBuildableKey))
+            if (WasPressedThisFrame(_toggleBuildableKey))
                 _showBuildable = !_showBuildable;
-            if (Input.GetKeyDown(_toggleOccupancyKey))
+            if (WasPressedThisFrame(_toggleOccupancyKey))
                 _showOccupancy = !_showOccupancy;
         }
 
@@ -218,6 +219,21 @@ namespace SeasonalBastion
                     Destroy(go);
             }
             _instances.Clear();
+        }
+
+        private static bool WasPressedThisFrame(KeyCode key)
+        {
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.G => Keyboard.current.gKey.wasPressedThisFrame,
+                KeyCode.B => Keyboard.current.bKey.wasPressedThisFrame,
+                KeyCode.N => Keyboard.current.nKey.wasPressedThisFrame,
+                KeyCode.M => Keyboard.current.mKey.wasPressedThisFrame,
+                _ => false,
+            };
         }
     }
 }
