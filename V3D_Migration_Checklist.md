@@ -132,7 +132,8 @@
 - Phase 4 now has minimal presenter-driven NPC/enemy world movement in 3D via `NpcMovementPresenter3D` and `EnemyMovementPresenter3D`, keeping gameplay movement logic untouched.
 - Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
 - Phase 9/T32 now has a minimal runtime-toggleable `GridOverlay3D` for grid lines, blocked cells, buildable cells, and occupancy debug overlays using existing `GridMap` and generated terrain data.
-- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and overlay usability.
+- Phase 9/T33 now has a minimal `BuildStateDebug3D` overlay for inspecting runtime building/build-site state without touching gameplay logic, and selection action debug input was aligned with the Input System.
+- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and debug overlay usability.
 
 ---
 
@@ -193,6 +194,7 @@
 ### Debug
 - [x] Grid overlay toggle
 - [x] Blocked/buildable visible
+- [x] Build state debug visible
 - [ ] Footprint debug visible
 - [ ] NPC path debug visible
 - [ ] Combat debug visible

@@ -1,5 +1,6 @@
 using SeasonalBastion.Contracts;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SeasonalBastion
 {
@@ -55,10 +56,10 @@ namespace SeasonalBastion
             if (_bootstrap == null || _selection == null)
                 return;
 
-            if (Input.GetKeyDown(_upgradeKey))
+            if (WasPressedThisFrame(_upgradeKey))
                 TryUpgradeSelectedBuilding();
 
-            if (Input.GetKeyDown(_destroyKey))
+            if (WasPressedThisFrame(_destroyKey))
                 TryDestroySelected();
         }
 
@@ -93,6 +94,19 @@ namespace SeasonalBastion
             }
 
             _lastAction = "Destroy skipped: nothing selected.";
+        }
+
+        private static bool WasPressedThisFrame(KeyCode key)
+        {
+            if (Keyboard.current == null)
+                return false;
+
+            return key switch
+            {
+                KeyCode.U => Keyboard.current.uKey.wasPressedThisFrame,
+                KeyCode.Delete => Keyboard.current.deleteKey.wasPressedThisFrame,
+                _ => false,
+            };
         }
     }
 }
