@@ -33,7 +33,7 @@
 
 ### Scene
 - [x] Ground plane exists
-- [ ] Ground layer configured
+- [x] Ground layer configured
 - [x] Raycast works
 
 ### Debug
@@ -63,20 +63,20 @@
 
 ## PHASE 3 — BUILDING 3D
 
-- [ ] BuildingView3D created
-- [ ] BuildingViewFactory3D works
-- [ ] Prefab registry exists
+- [x] BuildingView3D created
+- [x] BuildingViewFactory3D works
+- [x] Prefab registry exists
 
 ### Runtime
-- [ ] Buildings spawn correctly
+- [x] Buildings spawn correctly
 - [ ] Remove works
 - [ ] Upgrade updates correctly
-- [ ] No duplicate views
+- [x] No duplicate views
 
 ### Visual
-- [ ] Correct position (center cell)
-- [ ] Scale matches grid
-- [ ] Construction state visible
+- [x] Correct position (center cell)
+- [x] Scale matches grid
+- [x] Construction state visible
 
 ---
 
@@ -99,12 +99,12 @@
 
 ## PHASE 5 — SELECTION & UI
 
-- [ ] WorldSelectionController3D works
-- [ ] Object selection accurate
-- [ ] Click empty clears selection
+- [x] WorldSelectionController3D works
+- [x] Object selection accurate
+- [x] Click empty clears selection
 
 ### UI
-- [ ] Selection updates info panel
+- [x] Selection updates info panel
 - [ ] No UI click-through issues
 
 ### Camera Followups
@@ -121,8 +121,12 @@
 - T03 completed by introducing `GroundRaycastService` and `WorldToCellResolver3D`, then wiring `WorldSelectionController3D` to use them.
 - T05 completed as a minimal 3D scene setup pass with runtime terrain/collider safety wiring.
 - T06 completed by adding hover debug overlay and mapping verification helpers.
+- Phase 1 ground-layer wiring was patched in project settings and scene serialization, but mapping offset accuracy still needs explicit runtime verification.
 - Phase 2 validation helpers now expose footprint, driveway, and adjacent-road state for in-scene verification.
-- Compile-clean status and mapping offset accuracy still need explicit runtime/editor verification.
+- Phase 3 now has placeholder-safe `BuildingView3D`, `BuildingViewFactory3D`, `BuildingPrefabRegistry3D`, and `ConstructionVisualController3D` with primitive fallback visuals.
+- Building/build-site lifecycle sync was stabilized to reduce duplicate views and support construction-to-complete transitions without requiring real 3D assets.
+- Phase 5 selection now supports placeholder world-object picking for buildings and build sites via `SelectedEntityBridge3D` and `SelectionHighlight3D`, with debug inspect HUD integration.
+- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, and click-through edge cases.
 
 ---
 
