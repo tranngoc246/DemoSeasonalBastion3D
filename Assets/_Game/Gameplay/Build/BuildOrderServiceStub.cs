@@ -90,7 +90,60 @@ namespace SeasonalBastion
             return orderId;
         }
 
-        public int CreateUpgradeOrder(BuildingId building) => 0;
+        public int CreateUpgradeOrder(BuildingId building)
+        {
+            if (!_world.Buildings.Exists(building))
+                return 0;
+
+            BuildingState existing = _world.Buildings.Get(building);
+            if (!_data.TryGetBuilding(existing.DefId, out var def) || def == null)
+                return 0;
+
+            existing.Level = Math.Max(existing.Level + 1, existing.Level + 1);
+            existing.IsConstructed = false;
+            _world.Buildings.Set(building, existing);
+
+            BuildSiteState site = new()
+            {
+                BuildingDefId = existing.DefId,
+                TargetLevel = existing.Level,
+                Anchor = existing.Anchor,
+                Rotation = existing.Rotation,
+                IsActive = true,
+                WorkSecondsDone = 0f,
+                WorkSecondsTotal = Math.Max(0.1f, def.BuildChunksL1 <= 0 ? 1f : def.BuildChunksL1),
+                Kind = (byte)BuildOrderKind.Upgrade,
+                TargetBuilding = building,
+                FromDefId = existing.DefId,
+                RemainingCosts = def.BuildCostsL1 != null ? new List<CostDef>(def.BuildCostsL1) : new List<CostDef>(),
+                DeliveredSoFar = new List<CostDef>()
+            };
+
+            SiteId siteId = _world.Sites.Create(site);
+            site.Id = siteId;
+            _world.Sites.Set(siteId, site);
+            _bus?.Publish(new BuildSitePlacedEvent(existing.DefId, siteId));
+            _bus?.Publish(new WorldStateChangedEvent("BuildSite", siteId.Value));
+            _bus?.Publish(new WorldStateChangedEvent("Building", building.Value));
+
+            int orderId = _nextOrderId++;
+            BuildOrder order = new()
+            {
+                OrderId = orderId,
+                Kind = BuildOrderKind.Upgrade,
+                BuildingDefId = existing.DefId,
+                TargetBuilding = building,
+                Site = siteId,
+                RequiredCost = def.BuildCostsL1,
+                Delivered = Array.Empty<CostDef>(),
+                WorkSecondsRequired = site.WorkSecondsTotal,
+                WorkSecondsDone = 0f,
+                Completed = false
+            };
+
+            _orders[orderId] = order;
+            return orderId;
+        }
         public int CreateRepairOrder(BuildingId building) => 0;
 
         public bool TryGet(int orderId, out BuildOrder order) => _orders.TryGetValue(orderId, out order);
@@ -157,7 +210,7 @@ namespace SeasonalBastion
 
                 if (order.WorkSecondsDone >= required)
                 {
-                    FinalizePlaceOrder(order, site);
+                    FinalizeOrder(order, site);
                     order.Completed = true;
                     completed ??= new List<int>();
                     completed.Add(orderId);
@@ -179,7 +232,7 @@ namespace SeasonalBastion
             }
         }
 
-        private void FinalizePlaceOrder(BuildOrder order, BuildSiteState site)
+        private void FinalizeOrder(BuildOrder order, BuildSiteState site)
         {
             if (!_world.Buildings.Exists(order.TargetBuilding))
                 return;
@@ -206,6 +259,8 @@ namespace SeasonalBastion
             if (_world.Sites.Exists(site.Id))
                 _world.Sites.Destroy(site.Id);
 
+            if (site.IsUpgrade)
+                _index?.OnBuildingDestroyed(building.Id);
             _index?.OnBuildingCreated(building.Id);
             _bus?.Publish(new BuildSiteCompletedEvent(building.DefId, site.Id, building.Id));
             _bus?.Publish(new BuildingPlacedEvent(building.DefId, building.Id));
