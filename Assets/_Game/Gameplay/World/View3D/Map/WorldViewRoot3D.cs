@@ -133,8 +133,11 @@ namespace SeasonalBastion
                     _npcViews[key] = view;
                 }
 
-                view.transform.position = _runtimeHost.Mapper.CellToWorldCenter(state.Cell) + _actorVisualOffset;
                 view.transform.localScale = _prefabCatalog != null ? _prefabCatalog.actorScale : Vector3.one * 0.75f;
+                NpcMovementPresenter3D presenter = view.GetComponent<NpcMovementPresenter3D>();
+                if (presenter == null)
+                    presenter = view.AddComponent<NpcMovementPresenter3D>();
+                presenter.Present(_runtimeHost.Mapper, state, _actorVisualOffset);
             }
 
             RemoveStale(_npcViews, alive);
@@ -156,8 +159,11 @@ namespace SeasonalBastion
                     _enemyViews[key] = view;
                 }
 
-                view.transform.position = _runtimeHost.Mapper.CellToWorldCenter(state.Cell) + _actorVisualOffset;
                 view.transform.localScale = _prefabCatalog != null ? _prefabCatalog.actorScale : Vector3.one * 0.75f;
+                EnemyMovementPresenter3D presenter = view.GetComponent<EnemyMovementPresenter3D>();
+                if (presenter == null)
+                    presenter = view.AddComponent<EnemyMovementPresenter3D>();
+                presenter.Present(_runtimeHost.Mapper, _gameplayBootstrap != null ? _gameplayBootstrap.Runtime : null, state, _actorVisualOffset);
             }
 
             RemoveStale(_enemyViews, alive);

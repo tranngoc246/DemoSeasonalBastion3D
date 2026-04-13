@@ -83,12 +83,14 @@
 ## PHASE 4 — NPC / ENEMY 3D
 
 ### NPC
-- [ ] NpcView3D exists
+- [x] NpcView3D exists
+- [x] Movement presenter exists
 - [ ] Movement smooth
 - [ ] Rotation correct
 
 ### Enemy
-- [ ] EnemyView3D exists
+- [x] EnemyView3D exists
+- [x] Movement presenter exists
 - [ ] Movement smooth
 
 ### Validation
@@ -126,7 +128,8 @@
 - Phase 3 now has placeholder-safe `BuildingView3D`, `BuildingViewFactory3D`, `BuildingPrefabRegistry3D`, and `ConstructionVisualController3D` with primitive fallback visuals.
 - Building/build-site lifecycle sync was stabilized to reduce duplicate views and support construction-to-complete transitions without requiring real 3D assets.
 - Phase 5 selection now supports placeholder world-object picking for buildings and build sites via `SelectedEntityBridge3D` and `SelectionHighlight3D`, with debug inspect HUD integration.
-- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, and click-through edge cases.
+- Phase 4 now has minimal presenter-driven NPC/enemy world movement in 3D via `NpcMovementPresenter3D` and `EnemyMovementPresenter3D`, keeping gameplay movement logic untouched.
+- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, and movement smoothness.
 
 ---
 
