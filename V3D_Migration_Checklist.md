@@ -131,7 +131,8 @@
 - Phase 5 selection now supports placeholder world-object picking for buildings and build sites via `SelectedEntityBridge3D` and `SelectionHighlight3D`, with debug inspect HUD integration.
 - Phase 4 now has minimal presenter-driven NPC/enemy world movement in 3D via `NpcMovementPresenter3D` and `EnemyMovementPresenter3D`, keeping gameplay movement logic untouched.
 - Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
-- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, and camera focus behavior.
+- Phase 9/T32 now has a minimal runtime-toggleable `GridOverlay3D` for grid lines, blocked cells, buildable cells, and occupancy debug overlays using existing `GridMap` and generated terrain data.
+- Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and overlay usability.
 
 ---
 
@@ -190,8 +191,8 @@
 ## PHASE 9 — DEBUG & HARDENING
 
 ### Debug
-- [ ] Grid overlay toggle
-- [ ] Blocked/buildable visible
+- [x] Grid overlay toggle
+- [x] Blocked/buildable visible
 - [ ] Footprint debug visible
 - [ ] NPC path debug visible
 - [ ] Combat debug visible
