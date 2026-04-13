@@ -914,6 +914,69 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1900000100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900000101}
+  - component: {fileID: 1900000102}
+  m_Layer: 0
+  m_Name: GridOverlay3D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1900000101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900000100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1900000102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900000100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7906a056894e00e4889f5fca6bd8954a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeasonalBastion.GridOverlay3D
+  _runtimeHost: {fileID: 11239219}
+  _showGrid: 1
+  _showBlocked: 0
+  _showBuildable: 0
+  _showOccupancy: 0
+  _toggleGridKey: 103
+  _toggleBlockedKey: 98
+  _toggleBuildableKey: 110
+  _toggleOccupancyKey: 109
+  _lineHeight: 0.06
+  _cellFillHeight: 0.03
+  _gridLineThickness: 0.035
+  _fillSizeFactor: 0.72
+  _gridColor: {r: 1, g: 1, b: 1, a: 0.08}
+  _blockedColor: {r: 1, g: 0.2, b: 0.2, a: 0.35}
+  _buildableColor: {r: 0.2, g: 0.9, b: 0.35, a: 0.2}
+  _roadColor: {r: 1, g: 0.65, b: 0.1, a: 0.35}
+  _buildingColor: {r: 1, g: 0.9, b: 0.1, a: 0.35}
+  _siteColor: {r: 0.2, g: 0.8, b: 1, a: 0.35}
 --- !u!1 &2012752002
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,6 +1014,7 @@ MonoBehaviour:
   _highlight: {fileID: 32189896}
   _hoverDebug: {fileID: 0}
   _preview: {fileID: 1611475961}
+  _gridOverlay: {fileID: 1900000102}
   _hud: {fileID: 0}
   _inspectHud: {fileID: 0}
   _selectionActions: {fileID: 0}
@@ -983,5 +1047,6 @@ SceneRoots:
   - {fileID: 1730662296}
   - {fileID: 32189897}
   - {fileID: 1611475962}
+  - {fileID: 1900000101}
   - {fileID: 2012752004}
   - {fileID: 1038837799}
