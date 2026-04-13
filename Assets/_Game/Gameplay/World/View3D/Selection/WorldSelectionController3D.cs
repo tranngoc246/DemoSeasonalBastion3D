@@ -16,6 +16,7 @@ namespace SeasonalBastion
 
         private GroundRaycastService _groundRaycast;
         private WorldToCellResolver3D _resolver;
+        private int _resolvedGroundMaskValue;
 
         public bool HasHoveredCell { get; private set; }
         public CellPos HoveredCell { get; private set; }
@@ -47,8 +48,12 @@ namespace SeasonalBastion
             if (_runtimeHost != null && _runtimeHost.Mapper != null)
             {
                 LayerMask resolvedGroundMask = ResolveGroundMask();
-                _groundRaycast ??= new GroundRaycastService(resolvedGroundMask, _rayDistance);
-                _resolver ??= new WorldToCellResolver3D(_groundRaycast, _runtimeHost.Mapper);
+                if (_groundRaycast == null || _resolver == null || _resolvedGroundMaskValue != resolvedGroundMask.value)
+                {
+                    _resolvedGroundMaskValue = resolvedGroundMask.value;
+                    _groundRaycast = new GroundRaycastService(resolvedGroundMask, _rayDistance);
+                    _resolver = new WorldToCellResolver3D(_groundRaycast, _runtimeHost.Mapper);
+                }
             }
         }
 

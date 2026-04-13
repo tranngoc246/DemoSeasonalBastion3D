@@ -14,6 +14,7 @@ namespace SeasonalBastion
         private bool _hadLastCell;
         private CellPos _lastCell;
         private string _overlayText = "Hover: none";
+        private string _lastHitInfo = string.Empty;
 
         private void Awake()
         {
@@ -47,6 +48,7 @@ namespace SeasonalBastion
             if (_selection == null || !_selection.HasHoveredCell)
             {
                 _overlayText = "Hover: none";
+                _lastHitInfo = string.Empty;
                 _hadLastCell = false;
                 return;
             }
@@ -56,7 +58,20 @@ namespace SeasonalBastion
                 ? _runtimeHost.Mapper.CellToWorldCenter(hovered)
                 : Vector3.zero;
 
-            _overlayText = $"Hover: cell=({hovered.X},{hovered.Y}) world=({world.x:F2}, {world.y:F2}, {world.z:F2})";
+            if (_selection.TryRaycastCell(out var resolvedCell))
+            {
+                Vector3 resolvedWorld = _runtimeHost != null && _runtimeHost.Mapper != null
+                    ? _runtimeHost.Mapper.CellToWorldCenter(resolvedCell)
+                    : Vector3.zero;
+                Vector3 delta = resolvedWorld - world;
+                _lastHitInfo = $" resolved=({resolvedCell.X},{resolvedCell.Y}) delta=({delta.x:F2}, {delta.y:F2}, {delta.z:F2})";
+            }
+            else
+            {
+                _lastHitInfo = " resolved=<none>";
+            }
+
+            _overlayText = $"Hover: cell=({hovered.X},{hovered.Y}) world=({world.x:F2}, {world.y:F2}, {world.z:F2}){_lastHitInfo}";
 
             bool changed = !_hadLastCell || hovered.X != _lastCell.X || hovered.Y != _lastCell.Y;
             if (changed)

@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 11239221}
   - component: {fileID: 11239219}
   - component: {fileID: 11239220}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TerrainRuntime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -714,11 +714,8 @@ MonoBehaviour:
   _rotateKey: 114
   _confirmKey: 504
   _placementMode: 1
-  _validColor: {r: 0.2, g: 1, b: 0.35, a: 0.45}
-  _invalidColor: {r: 1, g: 0.25, b: 0.25, a: 0.45}
-  _entryRoadColor: {r: 1, g: 0.9, b: 0.15, a: 0.55}
-  _heightOffset: 0.12
-  _cellFill: 0.9
+  _ghostView: {fileID: 0}
+  _footprintOverlay: {fileID: 0}
   _showDebugPlacementLabel: 1
   _debugLabelScreenOffset: {x: 16, y: 16}
 --- !u!4 &1611475962
@@ -895,9 +892,11 @@ MonoBehaviour:
   _camera: {fileID: 1504267216}
   _runtimeHost: {fileID: 11239219}
   _gameplayBootstrap: {fileID: 1484190959}
-  _rayMask:
+  _groundMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
+  _groundLayerName: Ground
+  _rayDistance: 5000
   _selectKey: 323
 --- !u!4 &1730662296
 Transform:
@@ -949,6 +948,7 @@ MonoBehaviour:
   _worldView: {fileID: 1370310601}
   _selection: {fileID: 1730662295}
   _highlight: {fileID: 32189896}
+  _hoverDebug: {fileID: 0}
   _preview: {fileID: 1611475961}
   _hud: {fileID: 0}
   _inspectHud: {fileID: 0}
