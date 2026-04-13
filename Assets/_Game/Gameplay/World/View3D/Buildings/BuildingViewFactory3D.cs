@@ -99,6 +99,10 @@ namespace SeasonalBastion
 
             if (go.GetComponent<ConstructionVisualController3D>() == null)
                 go.AddComponent<ConstructionVisualController3D>();
+            if (go.GetComponent<SelectedEntityBridge3D>() == null)
+                go.AddComponent<SelectedEntityBridge3D>();
+            if (go.GetComponent<SelectionHighlight3D>() == null)
+                go.AddComponent<SelectionHighlight3D>();
 
             views[key] = view;
             return view;

@@ -23,6 +23,7 @@ namespace SeasonalBastion
         public bool HasSelectedCell { get; private set; }
         public CellPos SelectedCell { get; private set; }
         public BuildingId SelectedBuilding { get; private set; }
+        public SiteId SelectedSite { get; private set; }
 
         private void Awake()
         {
@@ -89,21 +90,22 @@ namespace SeasonalBastion
 
             if (!HasHoveredCell)
             {
-                HasSelectedCell = false;
-                SelectedCell = default;
-                SelectedBuilding = default;
+                ClearSelection();
                 return;
             }
 
             HasSelectedCell = true;
             SelectedCell = HoveredCell;
             SelectedBuilding = default;
+            SelectedSite = default;
 
             if (_runtimeHost?.GridMap != null)
             {
                 CellOccupancy occ = _runtimeHost.GridMap.Get(SelectedCell);
                 if (occ.Kind == CellOccupancyKind.Building)
                     SelectedBuilding = occ.Building;
+                else if (occ.Kind == CellOccupancyKind.Site)
+                    SelectedSite = occ.Site;
             }
         }
 
@@ -123,12 +125,19 @@ namespace SeasonalBastion
             if (bridge == null)
                 return false;
 
-            HasSelectedCell = false;
-            SelectedCell = default;
-            SelectedBuilding = default;
+            ClearSelection();
 
-            if (bridge.IsBuildSite)
+            if (bridge.IsBuildSite && bridge.SiteId.Value != 0)
+            {
+                SelectedSite = bridge.SiteId;
+                if (_gameplayBootstrap?.World != null && _gameplayBootstrap.World.Sites.Exists(bridge.SiteId))
+                {
+                    BuildSiteState state = _gameplayBootstrap.World.Sites.Get(bridge.SiteId);
+                    SelectedCell = state.Anchor;
+                    HasSelectedCell = true;
+                }
                 return true;
+            }
 
             if (bridge.BuildingId.Value != 0)
             {
@@ -143,6 +152,14 @@ namespace SeasonalBastion
             }
 
             return false;
+        }
+
+        private void ClearSelection()
+        {
+            HasSelectedCell = false;
+            SelectedCell = default;
+            SelectedBuilding = default;
+            SelectedSite = default;
         }
 
         public bool TryRaycastCell(out CellPos cell)

@@ -109,7 +109,11 @@ namespace SeasonalBastion
 
                 if (_bootstrap?.World != null)
                 {
-                    if (occ.Kind == CellOccupancyKind.Building && occ.Building.Value != 0)
+                    if (_selection.SelectedBuilding.Value != 0)
+                        AppendBuilding(_selection.SelectedBuilding);
+                    else if (_selection.SelectedSite.Value != 0)
+                        AppendSite(_selection.SelectedSite);
+                    else if (occ.Kind == CellOccupancyKind.Building && occ.Building.Value != 0)
                         AppendBuilding(occ.Building);
                     else if (occ.Kind == CellOccupancyKind.Site && occ.Site.Value != 0)
                         AppendSite(occ.Site);
