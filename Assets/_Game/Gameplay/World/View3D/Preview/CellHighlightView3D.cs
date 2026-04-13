@@ -11,6 +11,7 @@ namespace SeasonalBastion
         [SerializeField] private Color _selectedColor = new(1f, 0.92f, 0.2f, 0.5f);
         [SerializeField] private float _heightOffset = 0.1f;
         [SerializeField] private float _sizeFactor = 0.9f;
+        [SerializeField] private bool _hideSelectedCellForWorldObject = true;
 
         private GameObject _hoverMarker;
         private GameObject _selectedMarker;
@@ -73,6 +74,8 @@ namespace SeasonalBastion
                 return;
 
             bool visible = _selection != null && _selection.HasSelectedCell && _runtimeHost != null && _runtimeHost.Mapper != null;
+            if (visible && _hideSelectedCellForWorldObject && _selection.HasSelectedWorldObject)
+                visible = false;
             _selectedMarker.SetActive(visible);
             if (!visible)
                 return;

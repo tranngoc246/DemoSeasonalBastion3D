@@ -24,6 +24,7 @@ namespace SeasonalBastion
         public CellPos SelectedCell { get; private set; }
         public BuildingId SelectedBuilding { get; private set; }
         public SiteId SelectedSite { get; private set; }
+        public bool HasSelectedWorldObject => SelectedBuilding.Value != 0 || SelectedSite.Value != 0;
 
         private void Awake()
         {
