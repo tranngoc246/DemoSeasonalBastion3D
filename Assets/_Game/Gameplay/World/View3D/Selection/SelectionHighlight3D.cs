@@ -53,9 +53,11 @@ namespace SeasonalBastion
         {
             if (_bridge == null || _renderers == null)
                 return;
+            if (!_bridge.IsSelectable)
+                return;
 
-            bool selected = (!_bridge.IsBuildSite && _selection != null && _selection.SelectedBuilding.Value != 0 && _selection.SelectedBuilding.Value == _bridge.BuildingId.Value)
-                || (_bridge.IsBuildSite && _selection != null && _selection.SelectedSite.Value != 0 && _selection.SelectedSite.Value == _bridge.SiteId.Value);
+            bool selected = (_bridge.Kind == SelectableWorldObject3D.Building && _selection != null && _selection.SelectedBuilding.Value != 0 && _selection.SelectedBuilding.Value == _bridge.BuildingId.Value)
+                || (_bridge.Kind == SelectableWorldObject3D.BuildSite && _selection != null && _selection.SelectedSite.Value != 0 && _selection.SelectedSite.Value == _bridge.SiteId.Value);
 
             for (int i = 0; i < _renderers.Length; i++)
             {

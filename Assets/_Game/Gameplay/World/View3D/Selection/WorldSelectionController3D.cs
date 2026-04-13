@@ -77,6 +77,14 @@ namespace SeasonalBastion
 
         private void UpdateHover()
         {
+            bool hoveringSelectable = IsPointerOverSelectableWorldObject();
+            if (hoveringSelectable)
+            {
+                HasHoveredCell = false;
+                HoveredCell = default;
+                return;
+            }
+
             HasHoveredCell = TryRaycastCell(out var cell);
             HoveredCell = cell;
         }
@@ -123,7 +131,7 @@ namespace SeasonalBastion
             SelectedEntityBridge3D bridge = hit.collider != null
                 ? hit.collider.GetComponentInParent<SelectedEntityBridge3D>()
                 : null;
-            if (bridge == null)
+            if (bridge == null || !bridge.IsSelectable)
                 return false;
 
             ClearSelection();
@@ -171,6 +179,22 @@ namespace SeasonalBastion
 
             Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
             return _resolver.TryResolveFromScreen(_camera, pointer, out cell, out _);
+        }
+
+        private bool IsPointerOverSelectableWorldObject()
+        {
+            if (_camera == null)
+                return false;
+
+            Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+            Ray ray = _camera.ScreenPointToRay(pointer);
+            if (!Physics.Raycast(ray, out var hit, _rayDistance, ~0, QueryTriggerInteraction.Ignore))
+                return false;
+
+            SelectedEntityBridge3D bridge = hit.collider != null
+                ? hit.collider.GetComponentInParent<SelectedEntityBridge3D>()
+                : null;
+            return bridge != null && bridge.IsSelectable;
         }
 
         private static bool WasPressedThisFrame(KeyCode key)
