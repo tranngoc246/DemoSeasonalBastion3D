@@ -129,22 +129,39 @@ namespace SeasonalBastion
 
         private void BuildGridLines()
         {
-            float cellSize = _runtimeHost.Mapper.CellSize;
             int width = _runtimeHost.GridMap.Width;
             int height = _runtimeHost.GridMap.Height;
 
             for (int x = 0; x <= width; x++)
             {
-                Vector3 start = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x, 0));
-                Vector3 end = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x, height));
-                CreateLine($"GridLineX_{x}", start, end, _gridLineThickness, _lineHeight, _gridColor);
+                for (int y = 0; y < height; y++)
+                {
+                    CellPos a = new(Mathf.Clamp(x - 1, 0, width - 1), y);
+                    CellPos b = new(Mathf.Clamp(x, 0, width - 1), y);
+                    float h = Mathf.Max(_runtimeHost.Mapper.GetHeightAtCell(a), _runtimeHost.Mapper.GetHeightAtCell(b));
+
+                    Vector3 start = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x, y));
+                    Vector3 end = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x, y + 1));
+                    start.y = _runtimeHost.Mapper.Origin.y + h + _lineHeight;
+                    end.y = _runtimeHost.Mapper.Origin.y + h + _lineHeight;
+                    CreateLine($"GridLineX_{x}_{y}", start, end, _gridLineThickness, _gridColor);
+                }
             }
 
             for (int y = 0; y <= height; y++)
             {
-                Vector3 start = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(0, y));
-                Vector3 end = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(width, y));
-                CreateLine($"GridLineY_{y}", start, end, _gridLineThickness, _lineHeight, _gridColor);
+                for (int x = 0; x < width; x++)
+                {
+                    CellPos a = new(x, Mathf.Clamp(y - 1, 0, height - 1));
+                    CellPos b = new(x, Mathf.Clamp(y, 0, height - 1));
+                    float h = Mathf.Max(_runtimeHost.Mapper.GetHeightAtCell(a), _runtimeHost.Mapper.GetHeightAtCell(b));
+
+                    Vector3 start = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x, y));
+                    Vector3 end = _runtimeHost.Mapper.CellToWorldCorner(new CellPos(x + 1, y));
+                    start.y = _runtimeHost.Mapper.Origin.y + h + _lineHeight;
+                    end.y = _runtimeHost.Mapper.Origin.y + h + _lineHeight;
+                    CreateLine($"GridLineY_{x}_{y}", start, end, _gridLineThickness, _gridColor);
+                }
             }
         }
 
@@ -165,7 +182,7 @@ namespace SeasonalBastion
             }
         }
 
-        private void CreateLine(string name, Vector3 start, Vector3 end, float thickness, float heightOffset, Color color)
+        private void CreateLine(string name, Vector3 start, Vector3 end, float thickness, Color color)
         {
             Vector3 delta = end - start;
             float length = delta.magnitude;
@@ -175,7 +192,7 @@ namespace SeasonalBastion
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name;
             go.transform.SetParent(transform, false);
-            go.transform.position = (start + end) * 0.5f + Vector3.up * heightOffset;
+            go.transform.position = (start + end) * 0.5f;
             go.transform.rotation = Quaternion.LookRotation(delta.normalized, Vector3.up);
             go.transform.localScale = new Vector3(thickness, 0.01f, length);
             ApplyVisual(go, color);
@@ -187,7 +204,9 @@ namespace SeasonalBastion
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name;
             go.transform.SetParent(transform, false);
-            go.transform.position = _runtimeHost.Mapper.CellToWorldCenter(cell) + Vector3.up * heightOffset;
+            Vector3 pos = _runtimeHost.Mapper.CellToWorldCenter(cell);
+            pos.y += heightOffset;
+            go.transform.position = pos;
             float size = _runtimeHost.Mapper.CellSize * _fillSizeFactor;
             go.transform.localScale = new Vector3(size, 0.01f, size);
             ApplyVisual(go, color);
