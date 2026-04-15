@@ -197,6 +197,11 @@ namespace SeasonalBastion
             return bridge != null && bridge.IsSelectable;
         }
 
+        public bool IsSelectionClickPressedThisFrame()
+        {
+            return WasPressedThisFrame(_selectKey);
+        }
+
         private static bool WasPressedThisFrame(KeyCode key)
         {
             if (Mouse.current != null)

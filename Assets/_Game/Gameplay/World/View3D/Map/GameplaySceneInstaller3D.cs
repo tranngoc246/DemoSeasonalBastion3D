@@ -21,6 +21,7 @@ namespace SeasonalBastion
 
         private void Awake()
         {
+            EnsureDebugObjects();
             Install();
         }
 
@@ -127,6 +128,25 @@ namespace SeasonalBastion
                 SetObjectField(_cameraFocus, "_bootstrap", _bootstrap);
                 SetObjectField(_cameraFocus, "_selection", _selection);
             }
+        }
+
+        private void EnsureDebugObjects()
+        {
+            EnsureObject<PlacementHudView3D>("PlacementHUD");
+            EnsureObject<SelectionInspectHudView3D>("SelectionInspectHUD");
+            EnsureObject<BuildStateDebug3D>("BuildStateDebug3D");
+            EnsureObject<PlacementValidationDebug3D>("PlacementValidationDebug3D");
+            EnsureObject<GridMappingVerifier3D>("GridMappingVerifier3D");
+        }
+
+        private T EnsureObject<T>(string objectName) where T : Component
+        {
+            T existing = FindFirstObjectByType<T>();
+            if (existing != null)
+                return existing;
+
+            GameObject go = new(objectName);
+            return go.AddComponent<T>();
         }
 
         private static void SetObjectField(Object target, string fieldName, Object value)

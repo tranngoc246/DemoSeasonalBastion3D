@@ -141,6 +141,14 @@ namespace SeasonalBastion
 
         private void AppendBuilding(BuildingId id)
         {
+            if (_bootstrap?.World == null || !_bootstrap.World.Buildings.Exists(id))
+            {
+                _sb.AppendLine("Type: Building");
+                _sb.Append("Id: ").AppendLine(id.Value.ToString());
+                _sb.AppendLine("State: missing/stale selection");
+                return;
+            }
+
             BuildingState st = _bootstrap.World.Buildings.Get(id);
             _sb.AppendLine("Type: Building");
             _sb.Append("Id: ").AppendLine(id.Value.ToString());
@@ -153,6 +161,14 @@ namespace SeasonalBastion
 
         private void AppendSite(SiteId id)
         {
+            if (_bootstrap?.World == null || !_bootstrap.World.Sites.Exists(id))
+            {
+                _sb.AppendLine("Type: Build Site");
+                _sb.Append("Id: ").AppendLine(id.Value.ToString());
+                _sb.AppendLine("State: missing/stale selection");
+                return;
+            }
+
             BuildSiteState st = _bootstrap.World.Sites.Get(id);
             _sb.AppendLine("Type: Build Site");
             _sb.Append("Id: ").AppendLine(id.Value.ToString());

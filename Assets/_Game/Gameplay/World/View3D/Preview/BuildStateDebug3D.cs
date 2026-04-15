@@ -145,7 +145,14 @@ namespace SeasonalBastion
                 return;
             }
 
-            _sb.Append("Buildings: ").AppendLine(_bootstrap.World.Buildings.Ids.Count.ToString());
+            int buildingCount = 0;
+            foreach (var id in _bootstrap.World.Buildings.Ids)
+            {
+                if (_bootstrap.World.Buildings.Exists(id))
+                    buildingCount++;
+            }
+
+            _sb.Append("Buildings: ").AppendLine(buildingCount.ToString());
             foreach (var id in _bootstrap.World.Buildings.Ids)
             {
                 if (!_bootstrap.World.Buildings.Exists(id))
@@ -161,7 +168,14 @@ namespace SeasonalBastion
                     .AppendLine();
             }
 
-            _sb.Append("Sites: ").AppendLine(_bootstrap.World.Sites.Ids.Count.ToString());
+            int siteCount = 0;
+            foreach (var id in _bootstrap.World.Sites.Ids)
+            {
+                if (_bootstrap.World.Sites.Exists(id))
+                    siteCount++;
+            }
+
+            _sb.Append("Sites: ").AppendLine(siteCount.ToString());
             foreach (var id in _bootstrap.World.Sites.Ids)
             {
                 if (!_bootstrap.World.Sites.Exists(id))

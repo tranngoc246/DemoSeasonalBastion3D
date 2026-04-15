@@ -69,6 +69,8 @@
 
 ### Runtime
 - [x] Buildings spawn correctly
+- [x] Remove runtime hook wired
+- [x] Upgrade runtime hook wired
 - [ ] Remove works
 - [ ] Upgrade updates correctly
 - [x] No duplicate views
@@ -111,6 +113,7 @@
 
 ### Camera Followups
 - [x] Focus controller exists
+- [x] Focus runtime wiring present
 - [ ] Focus works on selection
 - [ ] Focus works from notifications
 
@@ -133,6 +136,8 @@
 - Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
 - Phase 9/T32 now has a minimal runtime-toggleable `GridOverlay3D` for grid lines, blocked cells, buildable cells, and occupancy debug overlays using existing `GridMap` and generated terrain data.
 - Phase 9/T33 now has a minimal `BuildStateDebug3D` overlay for inspecting runtime building/build-site state without touching gameplay logic, and selection action debug input was aligned with the Input System.
+- Runtime verification pass confirmed scene wiring for `GameplaySceneInstaller3D`, `PlacementPreviewController3D`, `WorldSelectionController3D`, `GridOverlay3D`, and camera focus flow in `DemoGameplayScene.unity`.
+- Runtime verification also confirmed debug hooks exist for remove/upgrade actions via `SelectionActionDebug3D`, while end-to-end success still requires explicit editor/playmode verification.
 - Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and debug overlay usability.
 
 ---

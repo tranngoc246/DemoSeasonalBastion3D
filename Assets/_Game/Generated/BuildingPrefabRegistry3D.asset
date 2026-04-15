@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4629b9fbf2b3d545b4d041f4ebc045a, type: 3}
+  m_Name: BuildingPrefabRegistry3D
+  m_EditorClassIdentifier: Assembly-CSharp::SeasonalBastion.BuildingPrefabRegistry3D
+  _defaultBuildingPrefab: {fileID: 8721097333993274902, guid: db11f35c8afe5a846a4d47a2074400aa, type: 3}
+  _entries:
+  - buildingDefId: 'hq_l1 '
+    prefab: {fileID: 8592629875136841439, guid: cb057cfeeb4440e4da91dc19b0ed5322, type: 3}
+  - buildingDefId: 'tower_arrow_l1 '
+    prefab: {fileID: 8721097333993274902, guid: db11f35c8afe5a846a4d47a2074400aa, type: 3}

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385610daf4003a745967b741fec25479, type: 3}
   m_Name: PrefabCatalog3D
   m_EditorClassIdentifier: Assembly-CSharp::SeasonalBastion.PrefabCatalog3D
-  defaultBuildingPrefab: {fileID: 0}
-  defaultNpcPrefab: {fileID: 0}
-  defaultEnemyPrefab: {fileID: 0}
+  defaultBuildingPrefab: {fileID: 8721097333993274902, guid: db11f35c8afe5a846a4d47a2074400aa, type: 3}
+  defaultNpcPrefab: {fileID: 8549220315221446813, guid: be09427a1da551441a2c97bbd8a628ed, type: 3}
+  defaultEnemyPrefab: {fileID: 572630299779135271, guid: 4aefa6664eebc3f4f9ae4952b49ec438, type: 3}
   buildingScale: {x: 1, y: 2, z: 1}
   actorScale: {x: 0.75, y: 0.75, z: 0.75}

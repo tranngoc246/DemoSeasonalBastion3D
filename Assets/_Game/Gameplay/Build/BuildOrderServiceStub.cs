@@ -189,11 +189,14 @@ namespace SeasonalBastion
             if (_orders.Count == 0 || dt <= 0f)
                 return;
 
+            List<int> orderIds = new(_orders.Keys);
             List<int> completed = null;
-            foreach (var kv in _orders)
+            for (int i = 0; i < orderIds.Count; i++)
             {
-                int orderId = kv.Key;
-                BuildOrder order = kv.Value;
+                int orderId = orderIds[i];
+                if (!_orders.TryGetValue(orderId, out BuildOrder order))
+                    continue;
+
                 if (order.Completed || order.Site.Value == 0 || order.TargetBuilding.Value == 0)
                     continue;
                 if (!_world.Sites.Exists(order.Site) || !_world.Buildings.Exists(order.TargetBuilding))

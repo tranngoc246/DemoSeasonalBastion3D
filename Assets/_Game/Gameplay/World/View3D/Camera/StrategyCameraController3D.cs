@@ -9,6 +9,7 @@ namespace SeasonalBastion
         [Header("References")]
         [SerializeField] private Camera _camera;
         [SerializeField] private TerrainGameplayRuntimeHost _runtimeHost;
+        [SerializeField] private PlacementPreviewController3D _placementPreview;
 
         [Header("View")]
         [SerializeField] private float _pitch = 60f;
@@ -36,7 +37,7 @@ namespace SeasonalBastion
         [SerializeField] private float _maxPitch = 80f;
         [SerializeField] private KeyCode _rotateLeftKey = KeyCode.Q;
         [SerializeField] private KeyCode _rotateRightKey = KeyCode.E;
-        [SerializeField] private KeyCode _resetCameraKey = KeyCode.F;
+        [SerializeField] private KeyCode _resetCameraKey = KeyCode.Home;
 
         [Header("Zoom")]
         [SerializeField] private float _zoomStep = 8f;
@@ -98,6 +99,8 @@ namespace SeasonalBastion
                 _camera = Camera.main;
             if (_runtimeHost == null)
                 _runtimeHost = FindFirstObjectByType<TerrainGameplayRuntimeHost>();
+            if (_placementPreview == null)
+                _placementPreview = FindFirstObjectByType<PlacementPreviewController3D>();
         }
 
         private void InitializeFromRuntime()
@@ -145,7 +148,11 @@ namespace SeasonalBastion
 
             if (_enableMouseRotate && Mouse.current != null)
             {
-                bool rotateHeld = Mouse.current.middleButton.isPressed;
+                bool placementModeActive = _placementPreview != null
+                    && _placementPreview.enabled
+                    && _placementPreview.gameObject.activeInHierarchy
+                    && _placementPreview.PlacementModeActive;
+                bool rotateHeld = !placementModeActive && Mouse.current.rightButton.isPressed;
                 Vector2 pointer = Mouse.current.position.ReadValue();
 
                 if (rotateHeld && !_rotateDragging)
@@ -206,7 +213,7 @@ namespace SeasonalBastion
             if (!_enableMouseDragPan || Mouse.current == null)
                 return;
 
-            bool dragHeld = Mouse.current.rightButton.isPressed;
+            bool dragHeld = Mouse.current.middleButton.isPressed;
             Vector2 pointer = Mouse.current.position.ReadValue();
 
             if (dragHeld && !_panDragging)
@@ -391,7 +398,7 @@ namespace SeasonalBastion
             {
                 KeyCode.Q => Keyboard.current.qKey.wasPressedThisFrame,
                 KeyCode.E => Keyboard.current.eKey.wasPressedThisFrame,
-                KeyCode.F => Keyboard.current.fKey.wasPressedThisFrame,
+                KeyCode.Home => Keyboard.current.homeKey.wasPressedThisFrame,
                 _ => false,
             };
         }

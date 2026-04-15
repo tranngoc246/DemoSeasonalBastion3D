@@ -13,6 +13,10 @@ namespace SeasonalBastion
 
         [Header("Demo content")]
         [SerializeField] private bool _seedDemoContent = true;
+        [SerializeField] private bool _seedDemoRoadCross = true;
+        [SerializeField] private bool _autoAdvanceDemoBuildOrders = true;
+        [SerializeField] private float _demoBuildTickMultiplier = 8f;
+        [SerializeField] private int _demoRoadHalfLength = 8;
 
         public DataRegistry Data { get; private set; }
         public WorldState World { get; private set; }
@@ -30,7 +34,10 @@ namespace SeasonalBastion
 
         private void Update()
         {
-            BuildOrders?.Tick(Time.deltaTime);
+            float tickDt = Time.deltaTime;
+            if (_autoAdvanceDemoBuildOrders)
+                tickDt *= Mathf.Max(1f, _demoBuildTickMultiplier);
+            BuildOrders?.Tick(tickDt);
         }
 
         [ContextMenu("Initialize Gameplay Runtime")]
@@ -309,8 +316,40 @@ namespace SeasonalBastion
 
             WorldOps.CreateBuilding("hq_l1", center, Dir4.N);
             WorldOps.CreateBuilding("tower_arrow_l1", towerCell, Dir4.N);
+
+            if (_seedDemoRoadCross)
+                SeedDemoRoads(center);
+
             WorldOps.CreateNpc("worker", npcCell);
             WorldOps.CreateEnemy("slime", enemyCell, 0);
+        }
+
+        private void SeedDemoRoads(CellPos center)
+        {
+            if (Placement == null || _terrainHost?.Bridge == null)
+                return;
+
+            int halfLength = Mathf.Max(2, _demoRoadHalfLength);
+            for (int dx = -halfLength; dx <= halfLength; dx++)
+            {
+                TryPlaceDemoRoad(new CellPos(center.X + dx, center.Y));
+            }
+
+            for (int dy = -halfLength; dy <= halfLength; dy++)
+            {
+                TryPlaceDemoRoad(new CellPos(center.X, center.Y + dy));
+            }
+        }
+
+        private void TryPlaceDemoRoad(CellPos cell)
+        {
+            if (_terrainHost?.GridMap == null || !_terrainHost.GridMap.IsInside(cell))
+                return;
+            if (_terrainHost?.Bridge != null && !_terrainHost.Bridge.IsBuildable(cell))
+                return;
+
+            if (!_terrainHost.GridMap.IsRoad(cell))
+                _terrainHost.GridMap.SetRoad(cell, true);
         }
     }
 }

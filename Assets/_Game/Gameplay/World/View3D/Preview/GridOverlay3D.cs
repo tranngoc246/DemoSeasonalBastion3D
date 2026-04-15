@@ -13,7 +13,7 @@ namespace SeasonalBastion
         [SerializeField] private bool _showBuildable;
         [SerializeField] private bool _showOccupancy;
         [SerializeField] private KeyCode _toggleGridKey = KeyCode.G;
-        [SerializeField] private KeyCode _toggleBlockedKey = KeyCode.B;
+        [SerializeField] private KeyCode _toggleBlockedKey = KeyCode.V;
         [SerializeField] private KeyCode _toggleBuildableKey = KeyCode.N;
         [SerializeField] private KeyCode _toggleOccupancyKey = KeyCode.M;
         [SerializeField] private float _lineHeight = 0.06f;
@@ -248,7 +248,7 @@ namespace SeasonalBastion
             return key switch
             {
                 KeyCode.G => Keyboard.current.gKey.wasPressedThisFrame,
-                KeyCode.B => Keyboard.current.bKey.wasPressedThisFrame,
+                KeyCode.V => Keyboard.current.vKey.wasPressedThisFrame,
                 KeyCode.N => Keyboard.current.nKey.wasPressedThisFrame,
                 KeyCode.M => Keyboard.current.mKey.wasPressedThisFrame,
                 _ => false,

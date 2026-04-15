@@ -4,9 +4,9 @@ namespace SeasonalBastion
 {
     public sealed class ConstructionVisualController3D : MonoBehaviour
     {
-        [SerializeField] private Color _constructionColor = new(1f, 0.6f, 0.1f, 0.65f);
+        [SerializeField] private Color _constructionColor = new(1f, 0.45f, 0.05f, 0.95f);
         [SerializeField] private Color _completedColor = new(0.75f, 0.75f, 0.75f, 1f);
-        [SerializeField] private float _constructionHeightScale = 0.35f;
+        [SerializeField] private float _constructionHeightScale = 0.6f;
 
         public void Apply(Renderer renderer, bool isUnderConstruction)
         {
