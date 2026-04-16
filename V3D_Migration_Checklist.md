@@ -1,5 +1,27 @@
 # Seasonal Bastion V3D Migration Checklist
 
+## Project Goal
+
+- [x] SeasonalBastionV2 identified as the canonical 2D source project at `E:\Projects\SeasonalBastionV2`
+- [x] DemoSeasonalBastion3D identified as the 3D migration sandbox/reference project
+- [x] Migration goal clarified: port 3D presentation back onto V2 gameplay/runtime, not replace V2 core with demo-specific logic
+- [x] `View2D` in V2 recognized as the old presentation layer and `View3D` recognized as the new presentation layer
+- [x] Core gameplay authority must stay in V2 systems/modules, with `View3D` acting as a consumer of runtime state only
+- [x] DemoSeasonalBastion3D should be used as a reference implementation for `View3D`, world mapping, camera, preview, selection, and debug helpers
+- [ ] Re-map all active migration tasks against SeasonalBastionV2 module boundaries before continuing implementation
+
+### Goal Statement
+
+Migrate Seasonal Bastion from 2D presentation to 3D presentation by using `SeasonalBastionV2` as the gameplay source of truth and porting a `View3D` layer onto that runtime. Treat `DemoSeasonalBastion3D` as a prototype/reference project, not as the new gameplay authority. Keep gameplay rules, save/load, run-start, combat, pathing, and world state owned by V2 core systems while `View3D` only reads and presents runtime state.
+
+### Working Strategy
+
+1. Use `E:\Projects\SeasonalBastionV2` as the canonical source for gameplay modules, runtime contracts, scenes, and data flow.
+2. Treat `Assets\_Game\World\View2D` in V2 as the baseline presentation layer to be complemented or replaced by `View3D`.
+3. Reuse ideas and selected implementations from `E:\Projects\DemoSeasonalBastion3D` only when they fit V2 boundaries cleanly.
+4. Port by vertical slice: mapping/raycast, placement preview, building views, NPC/enemy views, selection/focus, combat VFX, worldgen integration, and save/load rebuild.
+5. Avoid making DemoSeasonalBastion3D the long-term source of truth for gameplay logic or architecture decisions.
+
 ---
 
 ## PHASE 0 — BASELINE
