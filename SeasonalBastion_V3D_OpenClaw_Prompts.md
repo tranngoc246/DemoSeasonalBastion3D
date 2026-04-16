@@ -1,6 +1,13 @@
 # SeasonalBastion V3D – OpenClaw Task Prompts
 
-You are a Unity technical lead working on migrating a project from 2D grid gameplay to 3D presentation (SeasonalBastion V2 → V3D).
+You are a Unity technical lead working on migrating Seasonal Bastion from the canonical 2D project `E:\Projects\SeasonalBastionV2` to a 3D presentation layer (`View3D`). Use `E:\Projects\DemoSeasonalBastion3D` only as a migration sandbox/reference implementation, not as the source of truth for gameplay architecture.
+
+Migration framing:
+- `SeasonalBastionV2` is the canonical gameplay/runtime source.
+- `Assets\_Game\World\View2D` in V2 is the old presentation layer.
+- `View3D` is the new presentation layer to port back onto V2 runtime.
+- Reuse ideas and selected implementations from DemoSeasonalBastion3D only when they fit V2 module boundaries cleanly.
+- Do not let demo-specific structure or shortcuts become the new gameplay authority.
 
 Architecture constraints:
 - Core gameplay must remain unchanged:
@@ -24,13 +31,13 @@ Output rules:
 - Code must compile.
 
 Goal:
-Implement the requested feature safely without breaking existing systems.
+Implement the requested feature safely without breaking existing systems, with `SeasonalBastionV2` remaining the gameplay source of truth and `View3D` being ported onto that runtime.
 
 ## Global prefix (optional)
 Use this before any task if you want a shared constraint:
 
 ```text
-Keep V2 core intact. Minimal compile-safe patch. No reverse dependency to View3D.
+Keep V2 core intact. Port View3D onto V2 runtime. Minimal compile-safe patch. No reverse dependency to View3D.
 ```
 
 ---
@@ -39,7 +46,7 @@ Keep V2 core intact. Minimal compile-safe patch. No reverse dependency to View3D
 
 ### T00 — Baseline
 ```text
-Audit current V2 before 3D migration. Fix only small compile issues if any. Identify gameplay authority files: GridMap, PlacementService, WorldState, RunStartFacade, BuildOrderService. Create Docs/V3D_Migration_Baseline.md summarizing main scene, cell/world axis assumptions, and protected core modules. Do not add new features.
+Audit `E:\Projects\SeasonalBastionV2` before 3D migration. Fix only small compile issues if any. Identify gameplay authority files and module boundaries: GridMap, PlacementService, WorldState, RunStartFacade, BuildOrderService, plus the main runtime assemblies that own save/load, combat, and population behavior. Confirm `Assets\_Game\World\View2D` is the legacy presentation layer. Create Docs/V3D_Migration_Baseline.md summarizing main scene, cell/world axis assumptions, protected core modules, and where `View3D` should attach. Do not add new features.
 ```
 
 ---
@@ -48,7 +55,7 @@ Audit current V2 before 3D migration. Fix only small compile issues if any. Iden
 
 ### T01 — Create View3D structure
 ```text
-Create 3D architecture shell in V2. Add folders: View3D/Camera, Input, Map, Buildings, NPC, Enemies, Preview, Selection, VFX, and Shared/Spatial. If asmdefs are used, add compile-safe asmdefs for View3D/Shared with dependencies only toward core modules. No circular dependency.
+Create the 3D architecture shell inside `E:\Projects\SeasonalBastionV2`, not as a new gameplay source. Add folders: View3D/Camera, Input, Map, Buildings, NPC, Enemies, Preview, Selection, VFX, and Shared/Spatial. If asmdefs are used, add compile-safe asmdefs for View3D/Shared with dependencies only toward V2 core/runtime modules. No circular dependency.
 ```
 
 ### T02 — GridWorldSettings + CellWorldMapper3D
@@ -192,7 +199,7 @@ Create WorldGen module structure in V2: Runtime/Models, Generators, Classificati
 
 ### T25 — Port noise/height/falloff from Demo
 ```text
-Port world generation data logic from Demo into V2 WorldGen: noise, height map, falloff/shape generation, and request/result models. Remove old scene/runtime host dependencies. Keep generation deterministic by seed.
+Port world generation data logic from `E:\Projects\DemoSeasonalBastion3D` into V2 WorldGen only where it fits cleanly: noise, height map, falloff/shape generation, and request/result models. Remove demo-specific scene/runtime host dependencies. Keep generation deterministic by seed.
 ```
 
 ### T26 — TerrainSemanticType + GeneratedMapData
