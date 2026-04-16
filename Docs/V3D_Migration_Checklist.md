@@ -126,21 +126,26 @@ Use V2 as gameplay reference, build toward a real 3D runtime target, keep patche
 
 ### Current phase status
 
+Status wording in this checklist:
+- **implemented** = code/module exists
+- **wired** = scene/runtime hookup exists
+- **verified** = explicitly checked in editor/playmode/runtime behavior
+
 #### Spatial
-- [x] GridWorldSettings created
-- [x] CellWorldMapper3D working
-- [x] WorldToCellResolver3D working
-- [ ] Mapping accurate (no offset)
+- [x] GridWorldSettings implemented
+- [x] CellWorldMapper3D implemented
+- [x] WorldToCellResolver3D implemented
+- [ ] Mapping verified accurate (no offset)
 
 #### Camera
-- [x] StrategyCameraController3D works
-- [x] Pan/zoom stable
+- [x] StrategyCameraController3D implemented
+- [x] Pan/zoom wired
 - [x] Camera bounds applied
 
 #### Scene
 - [x] Ground plane exists
 - [x] Ground layer configured
-- [x] Raycast works
+- [x] Raycast wired
 
 #### Debug
 - [x] Hover cell debug visible
@@ -161,20 +166,20 @@ Use V2 as gameplay reference, build toward a real 3D runtime target, keep patche
 - [ ] UI click-through issues are eliminated
 
 ### Current phase status
-- [x] PlacementPreviewController3D created
-- [x] PlacementGhostView3D working
-- [x] FootprintOverlay3D correct
+- [x] PlacementPreviewController3D implemented
+- [x] PlacementGhostView3D implemented
+- [x] FootprintOverlay3D implemented
 - [x] Driveway marker visible
 
 #### Integration
 - [x] Uses PlacementService (no duplicate logic)
-- [x] Valid/invalid preview correct
-- [x] Click build works
+- [x] Valid/invalid preview wired
+- [x] Click build wired
 
 #### Validation
-- [x] Footprint correct
-- [x] Road adjacency correct
-- [x] Driveway correct
+- [ ] Footprint verified correct
+- [ ] Road adjacency verified correct
+- [ ] Driveway verified correct
 
 ---
 
@@ -190,21 +195,21 @@ Use V2 as gameplay reference, build toward a real 3D runtime target, keep patche
 - [ ] No duplicate building/build-site views remain
 
 ### Current phase status
-- [x] BuildingView3D created
-- [x] BuildingViewFactory3D works
+- [x] BuildingView3D implemented
+- [x] BuildingViewFactory3D implemented
 - [x] Prefab registry exists
 
 #### Runtime
-- [x] Buildings spawn correctly
+- [x] Buildings spawn wired
 - [x] Remove runtime hook wired
 - [x] Upgrade runtime hook wired
-- [ ] Remove works
-- [ ] Upgrade updates correctly
-- [x] No duplicate views
+- [ ] Remove verified end-to-end
+- [ ] Upgrade verified end-to-end
+- [ ] No duplicate views verified
 
 #### Visual
-- [x] Correct position (center cell)
-- [x] Scale matches grid
+- [ ] Correct position verified (center cell)
+- [ ] Scale verified against grid
 - [x] Construction state visible
 
 ---
@@ -226,14 +231,14 @@ Use V2 as gameplay reference, build toward a real 3D runtime target, keep patche
 
 #### NPC
 - [x] NpcView3D exists
-- [x] Movement presenter exists
-- [ ] Movement smooth
-- [ ] Rotation correct
+- [x] Movement presenter implemented
+- [ ] Movement smooth enough verified
+- [ ] Rotation correct enough verified
 
 #### Enemy
 - [x] EnemyView3D exists
-- [x] Movement presenter exists
-- [ ] Movement smooth
+- [x] Movement presenter implemented
+- [ ] Movement smooth enough verified
 
 #### Validation
 - [ ] Pathfinding unchanged
@@ -251,19 +256,19 @@ Use V2 as gameplay reference, build toward a real 3D runtime target, keep patche
 - [ ] Selection and focus do not break UI interaction rules
 
 ### Current phase status
-- [x] WorldSelectionController3D works
-- [x] Object selection accurate
-- [x] Click empty clears selection
+- [x] WorldSelectionController3D implemented
+- [ ] Object selection verified accurate
+- [ ] Click empty verified clears selection
 
 #### UI
-- [x] Selection updates info panel
-- [ ] No UI click-through issues
+- [x] Selection-to-info-panel wiring present
+- [ ] No UI click-through issues verified
 
 #### Camera Followups
 - [x] Focus controller exists
 - [x] Focus runtime wiring present
-- [ ] Focus works on selection
-- [ ] Focus works from notifications
+- [ ] Focus verified on selection
+- [ ] Focus verified from notifications
 
 ---
 
