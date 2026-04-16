@@ -23,6 +23,47 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 4. Reuse gameplay logic from V2 selectively instead of assuming all 2D runtime code should be copied as-is.
 5. Port by vertical slice, but judge each slice by source-to-target migration needs, not only by "add a 3D view layer" thinking.
 
+## Implementation Prompt Reference
+
+Use this as the default implementation prompt framing when asking an agent to execute a task in this project.
+
+### Role
+You are a Unity technical lead working on migrating Seasonal Bastion from the Unity 2D source project `E:\Projects\SeasonalBastionV2` to the Unity 3D target project/prototype `E:\Projects\DemoSeasonalBastion3D`.
+
+### Migration framing
+- `SeasonalBastionV2` is the 2D source project and the main reference for gameplay behavior, data, and runtime rules.
+- `DemoSeasonalBastion3D` is the 3D target/prototype project.
+- This migration is not only a `View2D` -> `View3D` swap. It is a source-2D -> target-3D project transition.
+- Preserve gameplay logic where practical, but allow 3D-native implementation for scene setup, camera, input, raycast, selection, prefab rendering, colliders, and terrain/world presentation.
+- Reuse V2 systems selectively. Do not assume every 2D runtime pattern should be copied unchanged into the 3D project.
+
+### Architecture constraints
+- Core gameplay must remain unchanged where practical:
+  `GridMap`, `PlacementService`, `WorldState`, `RunStartFacade`, `BuildOrderService`.
+- 3D must not become a second gameplay authority.
+- Never introduce reverse dependency from gameplay core to `View3D`.
+- `GridMap` is the single source of truth for gameplay occupancy and cell semantics.
+- Do not duplicate gameplay validation logic in 3D systems.
+
+### Coding rules
+- Prefer adding new modules/classes instead of modifying core.
+- Keep changes minimal, incremental, and compile-safe.
+- Avoid large refactors.
+- Avoid `FindObjectOfType` unless debug-only.
+- Avoid breaking public contracts unless required.
+
+### Output rules
+- Only include relevant files.
+- Show full file content for new files.
+- For modified files, show only necessary changes.
+- Code must compile.
+
+### Global prefix
+
+```text
+Use V2 as gameplay reference, build toward a real 3D runtime target, keep patches compile-safe, and avoid unnecessary reverse coupling.
+```
+
 ---
 
 ## IMPLEMENTATION PRIORITY ORDER
