@@ -9,8 +9,10 @@ namespace SeasonalBastion
         [SerializeField] private WorldSelectionController3D _selection;
         [SerializeField] private bool _drawHoveredCellBounds = true;
         [SerializeField] private bool _drawHoveredCellCenter = true;
+        [SerializeField] private bool _drawFlatCellCenter = true;
         [SerializeField] private Color _boundsColor = new(0.2f, 1f, 0.35f, 1f);
         [SerializeField] private Color _centerColor = new(1f, 0.3f, 0.2f, 1f);
+        [SerializeField] private Color _flatCenterColor = new(0.15f, 0.65f, 1f, 1f);
         [SerializeField] private float _debugHeightOffset = 0.15f;
         [SerializeField] private float _centerMarkerScale = 0.2f;
 
@@ -26,7 +28,7 @@ namespace SeasonalBastion
 
         private void OnDrawGizmos()
         {
-            if (!_drawHoveredCellBounds && !_drawHoveredCellCenter)
+            if (!_drawHoveredCellBounds && !_drawHoveredCellCenter && !_drawFlatCellCenter)
                 return;
 
             ResolveRefs();
@@ -48,6 +50,13 @@ namespace SeasonalBastion
                 Gizmos.color = _centerColor;
                 Vector3 center = _runtimeHost.Mapper.CellToWorldCenter(hovered) + Vector3.up * _debugHeightOffset;
                 Gizmos.DrawSphere(center, _centerMarkerScale);
+            }
+
+            if (_drawFlatCellCenter)
+            {
+                Gizmos.color = _flatCenterColor;
+                Vector3 flatCenter = _runtimeHost.Mapper.CellToWorldCenterFlat(hovered) + Vector3.up * (_debugHeightOffset * 0.5f);
+                Gizmos.DrawSphere(flatCenter, _centerMarkerScale * 0.75f);
             }
         }
 

@@ -43,7 +43,21 @@ namespace SeasonalBastion
             return new Vector3(x, Origin.y, z);
         }
 
+        public Vector3 CellToWorldCenterFlat(CellPos cell)
+        {
+            Vector3 corner = CellToWorldCorner(cell);
+            return new Vector3(
+                corner.x + CellSize * 0.5f,
+                Origin.y,
+                corner.z + GetGridYWorldZSign() * (CellSize * 0.5f));
+        }
+
         public Bounds GetFootprintWorldBounds(CellPos anchor, int sizeX, int sizeY)
+        {
+            return GetFootprintWorldBounds(anchor, sizeX, sizeY, true);
+        }
+
+        public Bounds GetFootprintWorldBounds(CellPos anchor, int sizeX, int sizeY, bool includeTerrainHeight)
         {
             int clampedSizeX = Mathf.Max(1, sizeX);
             int clampedSizeY = Mathf.Max(1, sizeY);
@@ -56,8 +70,11 @@ namespace SeasonalBastion
             float minZ = Mathf.Min(minCorner.z, maxCorner.z);
             float maxZ = Mathf.Max(minCorner.z, maxCorner.z);
 
-            float avgHeight = Origin.y + GetAverageHeightForFootprint(anchor, clampedSizeX, clampedSizeY);
-            Vector3 center = new Vector3((minX + maxX) * 0.5f, avgHeight, (minZ + maxZ) * 0.5f);
+            float centerY = includeTerrainHeight
+                ? Origin.y + GetAverageHeightForFootprint(anchor, clampedSizeX, clampedSizeY)
+                : Origin.y;
+
+            Vector3 center = new Vector3((minX + maxX) * 0.5f, centerY, (minZ + maxZ) * 0.5f);
             Vector3 size = new Vector3(Mathf.Abs(maxX - minX), 0f, Mathf.Abs(maxZ - minZ));
             return new Bounds(center, size);
         }
