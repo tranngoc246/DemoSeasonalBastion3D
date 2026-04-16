@@ -15,11 +15,17 @@ namespace SeasonalBastion
 
         public bool TryRaycast(Camera camera, Vector2 screenPosition, out RaycastHit hit)
         {
+            return TryRaycast(camera, screenPosition, out hit, out _);
+        }
+
+        public bool TryRaycast(Camera camera, Vector2 screenPosition, out RaycastHit hit, out Ray ray)
+        {
             hit = default;
+            ray = default;
             if (camera == null)
                 return false;
 
-            Ray ray = camera.ScreenPointToRay(screenPosition);
+            ray = camera.ScreenPointToRay(screenPosition);
             return Physics.Raycast(ray, out hit, _maxDistance, _groundMask, QueryTriggerInteraction.Ignore);
         }
     }

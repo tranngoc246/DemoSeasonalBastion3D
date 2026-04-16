@@ -25,6 +25,8 @@ namespace SeasonalBastion
         public BuildingId SelectedBuilding { get; private set; }
         public SiteId SelectedSite { get; private set; }
         public bool HasSelectedWorldObject => SelectedBuilding.Value != 0 || SelectedSite.Value != 0;
+        public bool HasLastHoverDebugInfo { get; private set; }
+        public WorldToCellResolver3D.ResolutionDebugInfo LastHoverDebugInfo { get; private set; }
 
         private void Awake()
         {
@@ -87,6 +89,12 @@ namespace SeasonalBastion
 
             HasHoveredCell = TryRaycastCell(out var cell);
             HoveredCell = cell;
+
+            if (!HasHoveredCell)
+            {
+                HasLastHoverDebugInfo = false;
+                LastHoverDebugInfo = default;
+            }
         }
 
         private void UpdateSelection()
@@ -175,10 +183,17 @@ namespace SeasonalBastion
         {
             cell = default;
             if (_camera == null || _resolver == null)
+            {
+                HasLastHoverDebugInfo = false;
+                LastHoverDebugInfo = default;
                 return false;
+            }
 
             Vector2 pointer = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
-            return _resolver.TryResolveFromScreen(_camera, pointer, out cell, out _);
+            bool ok = _resolver.TryResolveFromScreen(_camera, pointer, out cell, out _, out var debugInfo);
+            HasLastHoverDebugInfo = ok;
+            LastHoverDebugInfo = ok ? debugInfo : default;
+            return ok;
         }
 
         private bool IsPointerOverSelectableWorldObject()

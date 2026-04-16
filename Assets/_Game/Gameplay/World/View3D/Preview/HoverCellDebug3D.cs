@@ -60,11 +60,21 @@ namespace SeasonalBastion
 
             if (_selection.TryRaycastCell(out var resolvedCell))
             {
-                Vector3 resolvedWorld = _runtimeHost != null && _runtimeHost.Mapper != null
-                    ? _runtimeHost.Mapper.CellToWorldCenter(resolvedCell)
-                    : Vector3.zero;
-                Vector3 delta = resolvedWorld - world;
-                _lastHitInfo = $" resolved=({resolvedCell.X},{resolvedCell.Y}) delta=({delta.x:F2}, {delta.y:F2}, {delta.z:F2})";
+                if (_selection.HasLastHoverDebugInfo)
+                {
+                    var debug = _selection.LastHoverDebugInfo;
+                    Vector3 flatDelta = debug.HitToFlatDelta;
+                    Vector3 terrainDelta = debug.HitToTerrainDelta;
+                    _lastHitInfo = $" resolved=({resolvedCell.X},{resolvedCell.Y}) hit=({debug.HitPoint.x:F2}, {debug.HitPoint.y:F2}, {debug.HitPoint.z:F2}) flatDelta=({flatDelta.x:F2}, {flatDelta.y:F2}, {flatDelta.z:F2}) terrainDelta=({terrainDelta.x:F2}, {terrainDelta.y:F2}, {terrainDelta.z:F2})";
+                }
+                else
+                {
+                    Vector3 resolvedWorld = _runtimeHost != null && _runtimeHost.Mapper != null
+                        ? _runtimeHost.Mapper.CellToWorldCenter(resolvedCell)
+                        : Vector3.zero;
+                    Vector3 delta = resolvedWorld - world;
+                    _lastHitInfo = $" resolved=({resolvedCell.X},{resolvedCell.Y}) delta=({delta.x:F2}, {delta.y:F2}, {delta.z:F2})";
+                }
             }
             else
             {
