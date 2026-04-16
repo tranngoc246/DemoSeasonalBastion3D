@@ -25,8 +25,39 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ---
 
+## IMPLEMENTATION PRIORITY ORDER
+
+- [ ] P0 - Gameplay parity baseline
+- [ ] P1 - 3D runtime foundation
+- [ ] P2 - 3D interaction loop
+- [ ] P3 - 3D world presentation core
+- [ ] P5 - UI bridge and camera focus
+- [ ] P4 - Actor presentation parity
+- [ ] P7 - Save/load parity in the 3D runtime
+- [ ] P6 - Combat readability
+- [ ] P8 - Terrain and worldgen integration
+- [ ] P9 - Debug, hardening, and performance
+
+### Priority Notes
+
+- Treat `SeasonalBastionV2` as the gameplay behavior reference.
+- Treat `DemoSeasonalBastion3D` as the target runtime that must become playable as a real Unity 3D project.
+- Prefer interaction and runtime stability before terrain ambition and visual polish.
+- Judge progress by source-2D -> target-3D migration value, not only by isolated `View3D` feature count.
+
+---
+
 ## PHASE 0 — BASELINE
 
+### P0 - Gameplay parity baseline
+- [ ] Confirm the gameplay systems that act as parity anchors from V2
+- [ ] Lock the behavior expectations for GridMap, PlacementService, WorldState, RunStartFacade, and BuildOrderService
+- [ ] Identify which save/load behaviors must remain equivalent
+- [ ] Identify which combat behaviors must remain equivalent
+- [ ] Identify which NPC/path behaviors must remain equivalent
+- [ ] Treat V2 as the comparison oracle for major gameplay behavior
+
+### Existing baseline findings
 - [ ] Project compiles without errors
 - [x] Core systems identified:
   - [x] GridMap
@@ -43,23 +74,34 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 1 — FOUNDATION 3D
 
-### Spatial
+### P1 - 3D runtime foundation
+- [ ] Verify `GridWorldSettings`
+- [ ] Verify `CellWorldMapper3D`
+- [ ] Verify `WorldToCellResolver3D`
+- [ ] Eliminate mapping offset issues
+- [ ] Lock stable ground layer + collider + raycast behavior
+- [ ] Verify 3D camera pan/zoom/clamp behavior
+- [ ] Verify basic 3D scene bootstrap stability
+
+### Current phase status
+
+#### Spatial
 - [x] GridWorldSettings created
 - [x] CellWorldMapper3D working
 - [x] WorldToCellResolver3D working
 - [ ] Mapping accurate (no offset)
 
-### Camera
+#### Camera
 - [x] StrategyCameraController3D works
 - [x] Pan/zoom stable
 - [x] Camera bounds applied
 
-### Scene
+#### Scene
 - [x] Ground plane exists
 - [x] Ground layer configured
 - [x] Raycast works
 
-### Debug
+#### Debug
 - [x] Hover cell debug visible
 - [ ] Hover matches correct cell
 
@@ -67,17 +109,28 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 2 — PLACEMENT 3D
 
+### P2 - 3D interaction loop
+- [ ] Hover cell matches the intended grid cell
+- [ ] Placement preview works in 3D
+- [ ] Footprint preview is correct
+- [ ] Driveway/front marker preview is correct
+- [ ] Click-build works through 3D world input
+- [ ] World selection works in 3D
+- [ ] Clicking empty space clears selection correctly
+- [ ] UI click-through issues are eliminated
+
+### Current phase status
 - [x] PlacementPreviewController3D created
 - [x] PlacementGhostView3D working
 - [x] FootprintOverlay3D correct
 - [x] Driveway marker visible
 
-### Integration
+#### Integration
 - [x] Uses PlacementService (no duplicate logic)
 - [x] Valid/invalid preview correct
 - [x] Click build works
 
-### Validation
+#### Validation
 - [x] Footprint correct
 - [x] Road adjacency correct
 - [x] Driveway correct
@@ -86,11 +139,21 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 3 — BUILDING 3D
 
+### P3 - 3D world presentation core
+- [ ] BuildingView3D is stable
+- [ ] BuildingViewFactory3D is stable
+- [ ] Prefab registry is usable and extendable
+- [ ] Construction visual state is clear
+- [ ] Building remove flow works end-to-end
+- [ ] Building upgrade flow works end-to-end
+- [ ] No duplicate building/build-site views remain
+
+### Current phase status
 - [x] BuildingView3D created
 - [x] BuildingViewFactory3D works
 - [x] Prefab registry exists
 
-### Runtime
+#### Runtime
 - [x] Buildings spawn correctly
 - [x] Remove runtime hook wired
 - [x] Upgrade runtime hook wired
@@ -98,7 +161,7 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 - [ ] Upgrade updates correctly
 - [x] No duplicate views
 
-### Visual
+#### Visual
 - [x] Correct position (center cell)
 - [x] Scale matches grid
 - [x] Construction state visible
@@ -107,18 +170,31 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 4 — NPC / ENEMY 3D
 
-### NPC
+### P4 - Actor presentation parity
+- [ ] NPC view/factory path is stable
+- [ ] NPC movement presenter is stable
+- [ ] NPC movement is smooth enough
+- [ ] NPC rotation is correct enough
+- [ ] Enemy view/factory path is stable
+- [ ] Enemy movement presenter is stable
+- [ ] Enemy movement is smooth enough
+- [ ] No serious desync between logic and presentation
+- [ ] Path behavior still respects V2 gameplay expectations
+
+### Current phase status
+
+#### NPC
 - [x] NpcView3D exists
 - [x] Movement presenter exists
 - [ ] Movement smooth
 - [ ] Rotation correct
 
-### Enemy
+#### Enemy
 - [x] EnemyView3D exists
 - [x] Movement presenter exists
 - [ ] Movement smooth
 
-### Validation
+#### Validation
 - [ ] Pathfinding unchanged
 - [ ] No desync between logic and view
 
@@ -126,15 +202,23 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 5 — SELECTION & UI
 
+### P5 - UI bridge and camera focus
+- [ ] Selection updates the correct info panel state
+- [ ] Selection highlight is clear and reliable
+- [ ] Focus on selected entities works
+- [ ] Focus from notifications works
+- [ ] Selection and focus do not break UI interaction rules
+
+### Current phase status
 - [x] WorldSelectionController3D works
 - [x] Object selection accurate
 - [x] Click empty clears selection
 
-### UI
+#### UI
 - [x] Selection updates info panel
 - [ ] No UI click-through issues
 
-### Camera Followups
+#### Camera Followups
 - [x] Focus controller exists
 - [x] Focus runtime wiring present
 - [ ] Focus works on selection
@@ -167,49 +251,41 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ## PHASE 6 — COMBAT VISUAL
 
+### P6 - Combat readability
+- [ ] Projectile visuals are visible
+- [ ] Hit effects are visible
+- [ ] Death effects are visible
+- [ ] Visual events match combat events correctly
+- [ ] Combat logic remains unchanged
+
+### Current phase status
 - [ ] Projectile visible
 - [ ] Hit effect visible
 - [ ] Death effect visible
 
-### Validation
+#### Validation
 - [ ] Combat logic unchanged
 - [ ] Visual matches events
 
 ---
 
-## PHASE 7 — WORLDGEN
+## PHASE 7 — SAVE / LOAD
 
-### Generation
-- [ ] Noise generator working
-- [ ] Heightmap stable
-- [ ] Seed deterministic
+### P7 - Save/load parity in the 3D runtime
+- [ ] Seed/worldgen config persistence is defined correctly
+- [ ] Map rebuilds correctly after load
+- [ ] Buildings restore correctly after load
+- [ ] NPC views restore correctly after load
+- [ ] Enemy views restore correctly after load
+- [ ] No duplicate views appear after load
+- [ ] No GameObject state is saved directly
 
-### Data
-- [ ] GeneratedMapData valid
-- [ ] TerrainSemanticType defined
-
-### Adapter
-- [ ] TerrainToGridAdapter works
-- [ ] GridMap remains authority
-
-### Integration
-- [ ] RunStart uses generated map
-- [ ] HQ spawns valid
-- [ ] No blocked spawn
-
-### Visual
-- [ ] MapPresenter3D renders map
-- [ ] Terrain matches gameplay grid
-
----
-
-## PHASE 8 — SAVE / LOAD
-
+### Current phase status
 - [ ] Seed saved
 - [ ] Worldgen config saved
 - [ ] No GameObject saved directly
 
-### Load
+#### Load
 - [ ] Map regenerates correctly
 - [ ] Buildings restored
 - [ ] NPC restored
@@ -217,9 +293,63 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 
 ---
 
+## PHASE 8 — WORLDGEN
+
+### P8 - Terrain and worldgen integration
+- [ ] Noise generator path is stable
+- [ ] Heightmap generation is stable
+- [ ] Seed behavior is deterministic
+- [ ] GeneratedMapData is valid
+- [ ] TerrainSemanticType is defined correctly
+- [ ] TerrainToGridAdapter works correctly
+- [ ] GridMap remains the gameplay authority
+- [ ] RunStart uses generated map data correctly
+- [ ] HQ spawns on valid cells
+- [ ] Terrain/map presenter matches gameplay semantics
+
+### Current phase status
+
+#### Generation
+- [ ] Noise generator working
+- [ ] Heightmap stable
+- [ ] Seed deterministic
+
+#### Data
+- [ ] GeneratedMapData valid
+- [ ] TerrainSemanticType defined
+
+#### Adapter
+- [ ] TerrainToGridAdapter works
+- [ ] GridMap remains authority
+
+#### Integration
+- [ ] RunStart uses generated map
+- [ ] HQ spawns valid
+- [ ] No blocked spawn
+
+#### Visual
+- [ ] MapPresenter3D renders map
+- [ ] Terrain matches gameplay grid
+
+---
+
 ## PHASE 9 — DEBUG & HARDENING
 
-### Debug
+### P9 - Debug, hardening, and performance
+- [ ] Footprint debug is usable
+- [ ] NPC path debug is usable
+- [ ] Combat debug is usable
+- [ ] Reverse dependency to 3D layers is removed where needed
+- [ ] Core gameplay duplication is reduced or eliminated
+- [ ] Circular assembly dependency risks are removed
+- [ ] Heavy runtime `FindObjectOfType` usage is removed where possible
+- [ ] Allocation spikes in loops are reviewed
+- [ ] Compile-clean pass is verified
+- [ ] Final architecture review is documented
+
+### Current phase status
+
+#### Debug
 - [x] Grid overlay toggle
 - [x] Blocked/buildable visible
 - [x] Build state debug visible
@@ -227,12 +357,12 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 - [ ] NPC path debug visible
 - [ ] Combat debug visible
 
-### Stability
+#### Stability
 - [ ] No reverse dependency to View3D
 - [ ] No core logic duplication
 - [ ] No circular asmdef dependency
 
-### Performance
+#### Performance
 - [ ] No heavy FindObjectOfType in runtime
 - [ ] No allocation spikes in loops
 
@@ -245,6 +375,12 @@ Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `S
 - [ ] Save/load works
 - [ ] No major bugs
 - [ ] Architecture clean
+
+## FINAL PRIORITY RULE
+
+- [ ] Make the 3D target playable first
+- [ ] Preserve important gameplay behavior intentionally
+- [ ] Prefer interaction and runtime stability before terrain ambition and polish
 
 RESULT:
 - [ ] PASS
