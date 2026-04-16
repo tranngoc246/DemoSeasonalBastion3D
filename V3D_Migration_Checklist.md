@@ -2,25 +2,26 @@
 
 ## Project Goal
 
-- [x] SeasonalBastionV2 identified as the canonical 2D source project at `E:\Projects\SeasonalBastionV2`
-- [x] DemoSeasonalBastion3D identified as the 3D migration sandbox/reference project
-- [x] Migration goal clarified: port 3D presentation back onto V2 gameplay/runtime, not replace V2 core with demo-specific logic
-- [x] `View2D` in V2 recognized as the old presentation layer and `View3D` recognized as the new presentation layer
-- [x] Core gameplay authority must stay in V2 systems/modules, with `View3D` acting as a consumer of runtime state only
-- [x] DemoSeasonalBastion3D should be used as a reference implementation for `View3D`, world mapping, camera, preview, selection, and debug helpers
-- [ ] Re-map all active migration tasks against SeasonalBastionV2 module boundaries before continuing implementation
+- [x] `SeasonalBastionV2` identified as the Unity 2D source project at `E:\Projects\SeasonalBastionV2`
+- [x] `DemoSeasonalBastion3D` identified as the Unity 3D target/prototype project at `E:\Projects\DemoSeasonalBastion3D`
+- [x] Migration goal clarified: move from a Unity 2D project model to a Unity 3D project model while preserving gameplay behavior as much as practical
+- [x] `View2D` in V2 recognized as the old 2D presentation/runtime approach
+- [x] 3D migration recognized as more than a view swap: scene setup, camera, input, spatial mapping, prefab rendering, colliders, and terrain/world presentation all need 3D-native treatment
+- [x] V2 remains the main source for gameplay rules, data, and runtime behavior that should be preserved
+- [x] DemoSeasonalBastion3D remains the main target/reference for the new Unity 3D runtime shape
+- [ ] Re-map all active migration tasks against the source-2D -> target-3D transition plan before continuing implementation
 
 ### Goal Statement
 
-Migrate Seasonal Bastion from 2D presentation to 3D presentation by using `SeasonalBastionV2` as the gameplay source of truth and porting a `View3D` layer onto that runtime. Treat `DemoSeasonalBastion3D` as a prototype/reference project, not as the new gameplay authority. Keep gameplay rules, save/load, run-start, combat, pathing, and world state owned by V2 core systems while `View3D` only reads and presents runtime state.
+Migrate Seasonal Bastion from a Unity 2D project into a Unity 3D project. Use `SeasonalBastionV2` as the source of gameplay behavior, data, and runtime rules to preserve where possible, and use `DemoSeasonalBastion3D` as the target/prototype for the new 3D runtime. The end goal is not merely to bolt a `View3D` layer onto the old project, but to arrive at a playable Unity 3D game that carries forward the important gameplay logic from the 2D version.
 
 ### Working Strategy
 
-1. Use `E:\Projects\SeasonalBastionV2` as the canonical source for gameplay modules, runtime contracts, scenes, and data flow.
-2. Treat `Assets\_Game\World\View2D` in V2 as the baseline presentation layer to be complemented or replaced by `View3D`.
-3. Reuse ideas and selected implementations from `E:\Projects\DemoSeasonalBastion3D` only when they fit V2 boundaries cleanly.
-4. Port by vertical slice: mapping/raycast, placement preview, building views, NPC/enemy views, selection/focus, combat VFX, worldgen integration, and save/load rebuild.
-5. Avoid making DemoSeasonalBastion3D the long-term source of truth for gameplay logic or architecture decisions.
+1. Treat `E:\Projects\SeasonalBastionV2` as the 2D source project to mine for gameplay logic, defs, save/load contracts, run-start flow, combat behavior, and world rules.
+2. Treat `E:\Projects\DemoSeasonalBastion3D` as the 3D target/prototype where Unity-3D-native runtime structure is being assembled.
+3. Preserve core gameplay behavior where practical, but allow 3D-native rewrites for scene bootstrap, camera, input, raycast, selection, world presentation, terrain, prefabs, and colliders.
+4. Reuse gameplay logic from V2 selectively instead of assuming all 2D runtime code should be copied as-is.
+5. Port by vertical slice, but judge each slice by source-to-target migration needs, not only by "add a 3D view layer" thinking.
 
 ---
 

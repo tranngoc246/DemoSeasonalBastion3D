@@ -1,13 +1,13 @@
 # SeasonalBastion V3D – OpenClaw Task Prompts
 
-You are a Unity technical lead working on migrating Seasonal Bastion from the canonical 2D project `E:\Projects\SeasonalBastionV2` to a 3D presentation layer (`View3D`). Use `E:\Projects\DemoSeasonalBastion3D` only as a migration sandbox/reference implementation, not as the source of truth for gameplay architecture.
+You are a Unity technical lead working on migrating Seasonal Bastion from the Unity 2D source project `E:\Projects\SeasonalBastionV2` to the Unity 3D target project/prototype `E:\Projects\DemoSeasonalBastion3D`.
 
 Migration framing:
-- `SeasonalBastionV2` is the canonical gameplay/runtime source.
-- `Assets\_Game\World\View2D` in V2 is the old presentation layer.
-- `View3D` is the new presentation layer to port back onto V2 runtime.
-- Reuse ideas and selected implementations from DemoSeasonalBastion3D only when they fit V2 module boundaries cleanly.
-- Do not let demo-specific structure or shortcuts become the new gameplay authority.
+- `SeasonalBastionV2` is the 2D source project and the main reference for gameplay behavior, data, and runtime rules.
+- `DemoSeasonalBastion3D` is the 3D target/prototype project.
+- This migration is not only a `View2D` -> `View3D` swap. It is a source-2D -> target-3D project transition.
+- Preserve gameplay logic where practical, but allow 3D-native implementation for scene setup, camera, input, raycast, selection, prefab rendering, colliders, and terrain/world presentation.
+- Reuse V2 systems selectively. Do not assume every 2D runtime pattern should be copied unchanged into the 3D project.
 
 Architecture constraints:
 - Core gameplay must remain unchanged:
@@ -31,13 +31,13 @@ Output rules:
 - Code must compile.
 
 Goal:
-Implement the requested feature safely without breaking existing systems, with `SeasonalBastionV2` remaining the gameplay source of truth and `View3D` being ported onto that runtime.
+Implement the requested feature safely while advancing the migration from the Unity 2D source project to a playable Unity 3D target project, preserving important gameplay behavior from V2 where practical.
 
 ## Global prefix (optional)
 Use this before any task if you want a shared constraint:
 
 ```text
-Keep V2 core intact. Port View3D onto V2 runtime. Minimal compile-safe patch. No reverse dependency to View3D.
+Use V2 as gameplay reference, build toward a real 3D runtime target, keep patches compile-safe, and avoid unnecessary reverse coupling.
 ```
 
 ---
@@ -55,7 +55,7 @@ Audit `E:\Projects\SeasonalBastionV2` before 3D migration. Fix only small compil
 
 ### T01 — Create View3D structure
 ```text
-Create the 3D architecture shell inside `E:\Projects\SeasonalBastionV2`, not as a new gameplay source. Add folders: View3D/Camera, Input, Map, Buildings, NPC, Enemies, Preview, Selection, VFX, and Shared/Spatial. If asmdefs are used, add compile-safe asmdefs for View3D/Shared with dependencies only toward V2 core/runtime modules. No circular dependency.
+Create or refine the 3D architecture shell in the 3D target project. Add folders such as View3D/Camera, Input, Map, Buildings, NPC, Enemies, Preview, Selection, VFX, and Shared/Spatial where needed. If asmdefs are used, keep dependencies compile-safe and avoid circular references while reusing V2 logic selectively.
 ```
 
 ### T02 — GridWorldSettings + CellWorldMapper3D
@@ -194,12 +194,12 @@ Add minimal 3D combat feedback: ProjectileView3D, HitEffect3D, DeathEffect3D, an
 
 ### T24 — Create WorldGen module
 ```text
-Create WorldGen module structure in V2: Runtime/Models, Generators, Classification, Conversion, and Authoring/Configs. Add compile-safe asmdef if project uses asmdefs. Keep module independent from View3D.
+Create or refine WorldGen module structure in the 3D target project: Runtime/Models, Generators, Classification, Conversion, and Authoring/Configs. Add compile-safe asmdef if the project uses asmdefs. Keep module boundaries clean and avoid coupling gameplay authority to rendering code.
 ```
 
 ### T25 — Port noise/height/falloff from Demo
 ```text
-Port world generation data logic from `E:\Projects\DemoSeasonalBastion3D` into V2 WorldGen only where it fits cleanly: noise, height map, falloff/shape generation, and request/result models. Remove demo-specific scene/runtime host dependencies. Keep generation deterministic by seed.
+Port or adapt world generation data logic from the 2D source where useful, and keep or refine the 3D target's world generation pieces where they already fit the new runtime. Remove prototype-only scene/runtime host dependencies. Keep generation deterministic by seed.
 ```
 
 ### T26 — TerrainSemanticType + GeneratedMapData
