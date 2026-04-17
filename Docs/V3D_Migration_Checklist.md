@@ -230,14 +230,14 @@ Status wording in this checklist:
 ### Current phase status
 
 #### NPC
-- [x] NpcView3D exists
-- [x] Movement presenter implemented
+- [x] NPC runtime presentation path exists in `WorldViewRoot3D`
+- [x] `NpcMovementPresenter3D` implemented
 - [ ] Movement smooth enough verified
 - [ ] Rotation correct enough verified
 
 #### Enemy
-- [x] EnemyView3D exists
-- [x] Movement presenter implemented
+- [x] Enemy runtime presentation path exists in `WorldViewRoot3D`
+- [x] `EnemyMovementPresenter3D` implemented
 - [ ] Movement smooth enough verified
 
 #### Validation
@@ -283,14 +283,14 @@ Status wording in this checklist:
 - Phase 1 ground-layer wiring was patched in project settings and scene serialization, but mapping offset accuracy still needs explicit runtime verification.
 - Phase 2 validation helpers now expose footprint, driveway, and adjacent-road state for in-scene verification.
 - Phase 3 now has placeholder-safe `BuildingView3D`, `BuildingViewFactory3D`, `BuildingPrefabRegistry3D`, and `ConstructionVisualController3D` with primitive fallback visuals.
-- Building/build-site lifecycle sync was stabilized to reduce duplicate views and support construction-to-complete transitions without requiring real 3D assets.
+- Building/build-site lifecycle sync code exists to reduce duplicate views and support construction-to-complete transitions without requiring real 3D assets, but this still needs explicit runtime verification.
 - Phase 5 selection now supports placeholder world-object picking for buildings and build sites via `SelectedEntityBridge3D` and `SelectionHighlight3D`, with debug inspect HUD integration.
-- Phase 4 now has minimal presenter-driven NPC/enemy world movement in 3D via `NpcMovementPresenter3D` and `EnemyMovementPresenter3D`, keeping gameplay movement logic untouched.
+- Phase 4 currently uses `WorldViewRoot3D` plus `NpcMovementPresenter3D` and `EnemyMovementPresenter3D` for actor presentation. There is not currently a separate `NpcView3D` or `EnemyView3D` class.
 - Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
 - Phase 9/T32 now has a minimal runtime-toggleable `GridOverlay3D` for grid lines, blocked cells, buildable cells, and occupancy debug overlays using existing `GridMap` and generated terrain data.
 - Phase 9/T33 now has a minimal `BuildStateDebug3D` overlay for inspecting runtime building/build-site state without touching gameplay logic, and selection action debug input was aligned with the Input System.
-- Runtime verification pass confirmed scene wiring for `GameplaySceneInstaller3D`, `PlacementPreviewController3D`, `WorldSelectionController3D`, `GridOverlay3D`, and camera focus flow in `DemoGameplayScene.unity`.
-- Runtime verification also confirmed debug hooks exist for remove/upgrade actions via `SelectionActionDebug3D`, while end-to-end success still requires explicit editor/playmode verification.
+- `GameplaySceneInstaller3D` exists and contains scene auto-wiring logic for major View3D references, but scene-level/runtime verification still remains pending.
+- `SelectionActionDebug3D` provides debug hooks for remove/upgrade actions, while end-to-end success still requires explicit editor/playmode verification.
 - Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and debug overlay usability.
 
 ---
@@ -329,7 +329,7 @@ Status wording in this checklist:
 ### Current phase status
 - [ ] Seed saved
 - [ ] Worldgen config saved
-- [ ] No GameObject saved directly
+- [ ] No GameObject saved directly verified
 
 #### Load
 - [ ] Map regenerates correctly
@@ -394,6 +394,12 @@ Status wording in this checklist:
 - [ ] Final architecture review is documented
 
 ### Current phase status
+
+#### Next recommended step (while runtime verification is blocked)
+- [ ] Create a code-backed verification prep checklist for P1/P2/P3/P5
+- [ ] Map each pending verify item to the specific scene object, script, and expected observable outcome
+- [ ] Identify which claims can be promoted from implemented -> wired purely from code/scene inspection
+- [ ] Defer stability/pass claims until editor/playmode verification is available
 
 #### Debug
 - [x] Grid overlay toggle
