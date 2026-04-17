@@ -88,6 +88,11 @@ Reason: stabilize spatial/input/build loops before checking downstream systems.
 
 **Primary code evidence**
 - `Assets/_Game/Gameplay/World/View3D/Map/GameplaySceneInstaller3D.cs`
+- `Assets/Scenes/DemoGameplayScene.unity`
+
+**Current code/scene confidence**
+- `DemoGameplayScene.unity` contains the expected core View3D controller set, including selection, preview, world view, strategy camera, camera focus, grid overlay, and hover debug components.
+- `GameplaySceneInstaller3D` contains the intended auto-wiring path for these references.
 
 **Expected observable outcome**
 - scene references self-wire successfully
@@ -104,6 +109,8 @@ Reason: stabilize spatial/input/build loops before checking downstream systems.
 - `Assets/_Game/Gameplay/World/View3D/Preview/PlacementPreviewController3D.cs`
 - `Assets/_Game/Gameplay/World/View3D/Preview/PlacementGhostView3D.cs`
 - `Assets/_Game/Gameplay/World/View3D/Preview/FootprintOverlay3D.cs`
+- `Assets/_Game/Gameplay/World/View3D/Preview/PlacementHudView3D.cs`
+- `Assets/_Game/Gameplay/World/View3D/Preview/PlacementValidationDebug3D.cs`
 - `Assets/_Game/Gameplay/World/View3D/Selection/WorldSelectionController3D.cs`
 
 **Expected observable outcome**
@@ -176,6 +183,7 @@ Reason: stabilize spatial/input/build loops before checking downstream systems.
 - `Assets/_Game/Gameplay/World/View3D/Selection/WorldSelectionController3D.cs`
 - `Assets/_Game/Gameplay/World/View3D/Selection/SelectedEntityBridge3D.cs`
 - `Assets/_Game/Gameplay/World/View3D/Selection/SelectionHighlight3D.cs`
+- `Assets/_Game/Gameplay/World/View3D/Selection/SelectionInspectHudView3D.cs`
 
 **Expected observable outcome**
 - clicking a building selects that building

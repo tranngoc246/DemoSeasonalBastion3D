@@ -144,14 +144,19 @@ Runtime verification execution reference:
 - [x] StrategyCameraController3D implemented
 - [x] Pan/zoom wired
 - [x] Camera bounds applied
+- [x] Camera focus hookup present in scene/install path
 
 #### Scene
 - [x] Ground plane exists
 - [x] Ground layer configured
 - [x] Raycast wired
+- [x] Core View3D controller set present in `DemoGameplayScene.unity`
+- [x] `GameplaySceneInstaller3D` auto-wiring path present
 
 #### Debug
-- [x] Hover cell debug visible
+- [x] Hover cell debug component exists
+- [x] Hover/highlight debug path wired in `DemoGameplayScene.unity`
+- [x] Grid overlay debug path wired in `DemoGameplayScene.unity`
 - [ ] Hover matches correct cell
 
 ---
@@ -178,6 +183,8 @@ Runtime verification execution reference:
 - [x] Uses PlacementService (no duplicate logic)
 - [x] Valid/invalid preview wired
 - [x] Click build wired
+- [x] Placement HUD wiring path present
+- [x] Placement validation debug path present
 
 #### Validation
 - [ ] Footprint verified correct
@@ -206,6 +213,7 @@ Runtime verification execution reference:
 - [x] Buildings spawn wired
 - [x] Remove runtime hook wired
 - [x] Upgrade runtime hook wired
+- [x] Selection inspect HUD wiring path present
 - [ ] Remove verified end-to-end
 - [ ] Upgrade verified end-to-end
 - [ ] No duplicate views verified
@@ -260,16 +268,19 @@ Runtime verification execution reference:
 
 ### Current phase status
 - [x] WorldSelectionController3D implemented
+- [x] Object-picking bridge path present
 - [ ] Object selection verified accurate
 - [ ] Click empty verified clears selection
 
 #### UI
 - [x] Selection-to-info-panel wiring present
+- [x] Selection inspect HUD component exists
 - [ ] No UI click-through issues verified
 
 #### Camera Followups
 - [x] Focus controller exists
 - [x] Focus runtime wiring present
+- [x] Focus hookup present in `DemoGameplayScene.unity`
 - [ ] Focus verified on selection
 - [ ] Focus verified from notifications
 
@@ -292,7 +303,7 @@ Runtime verification execution reference:
 - Phase 5/T22 now has a minimal `CameraFocusController3D` that can focus the strategy camera on selected buildings, build sites, or cells without introducing gameplay-to-view coupling.
 - Phase 9/T32 now has a minimal runtime-toggleable `GridOverlay3D` for grid lines, blocked cells, buildable cells, and occupancy debug overlays using existing `GridMap` and generated terrain data.
 - Phase 9/T33 now has a minimal `BuildStateDebug3D` overlay for inspecting runtime building/build-site state without touching gameplay logic, and selection action debug input was aligned with the Input System.
-- `GameplaySceneInstaller3D` exists and contains scene auto-wiring logic for major View3D references, but scene-level/runtime verification still remains pending.
+- `GameplaySceneInstaller3D` exists and contains scene auto-wiring logic for major View3D references, and `DemoGameplayScene.unity` contains the core controller set for the intended verification path, but scene-level/runtime behavior still remains pending.
 - `SelectionActionDebug3D` provides debug hooks for remove/upgrade actions, while end-to-end success still requires explicit editor/playmode verification.
 - Compile-clean status and remaining runtime behavior still need explicit editor/playmode verification for remove, upgrade, click-through edge cases, movement smoothness, camera focus behavior, and debug overlay usability.
 
