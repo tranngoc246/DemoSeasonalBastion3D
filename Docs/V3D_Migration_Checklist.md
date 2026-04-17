@@ -131,6 +131,9 @@ Status wording in this checklist:
 - **wired** = scene/runtime hookup exists
 - **verified** = explicitly checked in editor/playmode/runtime behavior
 
+Runtime verification execution reference:
+- `V3D_Runtime_Verification_Plan.md`
+
 #### Spatial
 - [x] GridWorldSettings implemented
 - [x] CellWorldMapper3D implemented
@@ -396,10 +399,11 @@ Status wording in this checklist:
 ### Current phase status
 
 #### Next recommended step (while runtime verification is blocked)
-- [ ] Create a code-backed verification prep checklist for P1/P2/P3/P5
-- [ ] Map each pending verify item to the specific scene object, script, and expected observable outcome
+- [x] Create a code-backed verification prep checklist for P1/P2/P3/P5
+- [x] Map each pending verify item to the specific scene object, script, and expected observable outcome
 - [ ] Identify which claims can be promoted from implemented -> wired purely from code/scene inspection
-- [ ] Defer stability/pass claims until editor/playmode verification is available
+- [x] Defer stability/pass claims until editor/playmode verification is available
+- [x] Create `V3D_Runtime_Verification_Plan.md` as the execution reference for the first runtime verification pass
 
 #### Debug
 - [x] Grid overlay toggle
